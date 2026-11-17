@@ -1,0 +1,21 @@
+{
+  "name": "paper-ready",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "python3 scripts/package-source.py && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/core.test.js",
+    "test:e2e": "npm run build && playwright test"
+  },
+  "dependencies": {
+    "heic-to": "1.4.2",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "vite": "8.3.8"
+  }
+}

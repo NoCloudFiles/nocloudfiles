@@ -1,0 +1,9 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.wrangler/
+.env*
+public/source.zip
+public/heic-to-source.tgz
+public/third-party-notices.txt
