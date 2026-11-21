@@ -16,7 +16,8 @@ for (const [file, width, height, warning] of [
     await page.goto("/photo-privacy/");
     await page.locator("#photo").setInputFiles("tests/fixtures/" + file);
     const make = page.getByRole("button", { name: "Create private copy" });
-    await expect(make).toBeEnabled();
+    // HEIC loads the local WASM decoder on first use, including over the public network.
+    await expect(make).toBeEnabled({timeout: file.endsWith(".heic") ? 30000 : 8000});
     if (warning)
       await expect(
         page.getByText(warning, { exact: false }).last(),

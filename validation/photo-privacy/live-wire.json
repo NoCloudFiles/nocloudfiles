@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-21T06:23:41.839Z",
+  "beforeConsent": 0,
+  "errors": [],
+  "records": [
+    {
+      "status": 204,
+      "event": "page_view",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "photo_privacy",
+      "source": null,
+      "page": "https://nocloudfiles.com/photo-privacy/"
+    },
+    {
+      "status": 204,
+      "event": "tool_start",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "photo_privacy",
+      "source": "file",
+      "page": "https://nocloudfiles.com/photo-privacy/"
+    },
+    {
+      "status": 204,
+      "event": "photo_inspected",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "photo_privacy",
+      "source": "file",
+      "page": "https://nocloudfiles.com/photo-privacy/"
+    },
+    {
+      "status": 204,
+      "event": "photo_ready",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "photo_privacy",
+      "source": "file",
+      "page": "https://nocloudfiles.com/photo-privacy/"
+    },
+    {
+      "status": 204,
+      "event": "download_click",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "photo_privacy",
+      "source": "file",
+      "page": "https://nocloudfiles.com/photo-privacy/"
+    }
+  ]
+}
