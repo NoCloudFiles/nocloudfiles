@@ -105,3 +105,20 @@ test("both sample funnels report only bounded fields with consent; rejections re
     );
   }
 });
+
+test('Safari tip appears before entering a schedule only on recognized iPhone browsers',async({page})=>{
+  for(const [ua,expected] of [
+    ['iPhone AppleWebKit CriOS/143 Mobile/15E148 Safari/604.1',true],
+    ['iPhone AppleWebKit Version/18.0 Mobile/15E148 Safari/604.1',false],
+    ['Android Chrome/143 Mobile Safari/537.36',false],
+    ['iPhone AppleWebKit Mobile/15E148',false],
+  ]){
+    await page.addInitScript(value=>Object.defineProperty(navigator,'userAgent',{get:()=>value,configurable:true}),ua);
+    await page.goto('/zh/schedule-to-calendar/');
+    await page.locator('#sample').click();
+    await expect(page.locator('#safari-tip')).toBeVisible({visible:expected});
+    await page.locator('#map').click();await page.locator('#review').click();
+    await expect(page.getByRole('link',{name:'下载 ICS',exact:true})).toBeVisible();
+    await expect(page.locator('#guide')).toContainText('添加全部');
+  }
+});

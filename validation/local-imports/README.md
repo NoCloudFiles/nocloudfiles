@@ -7,3 +7,5 @@ The sample-only live probe recorded zero Google requests before consent and both
 WebKit checks exercised the browser download flow. A paired physical iPhone could not start a Safari WebDriver session; native multi-event import on iOS and Android remains unverified.
 
 The realtime report in property 565307803 displayed both contacts_ready and schedule_ready after the native Chrome sample checks. Those events are release QA.
+
+User device check: iPhone Safari opened the downloaded sample in the system calendar preview. Its header showed two events and Add All. The list showed Night shift starting January 31, 2027 at 10 PM and Day off on February 1 as all day. Saving the events was not exercised. The iPhone Chrome screenshot showed an ICS share sheet; it does not establish a platform-wide restriction on import destinations.

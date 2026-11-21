@@ -6,6 +6,12 @@ const input = get("table"),
   preview = get("preview"),
   status = get("status"),
   links = downloads(get("links"));
+// Third-party iOS browsers can also advertise Safari. Only act on a known identifier.
+const ua = navigator.userAgent;
+get("safari-tip").hidden = !(
+  /\biPhone\b/i.test(ua) &&
+  /\b(?:CriOS|FxiOS|EdgiOS|OPiOS|MicroMessenger)\//i.test(ua)
+);
 const names = {
   title: tr("标题", "Title"),
   date: tr("开始日期", "Start date"),
