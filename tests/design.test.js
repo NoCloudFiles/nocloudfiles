@@ -266,12 +266,8 @@ test("package-source.py includes DESIGN.md and every top-level tool directory fr
 });
 
 // Layout: one content width per page (DESIGN.md "Widths").
-test("single-column tools use the narrow column; two-column tools and home use the full one", () => {
-  for (const [p, s] of Object.entries(html)) {
-    const singleColumn = /class="(import-layout|privacy-layout)\b/.test(s);
-    const narrow = /<main class="column-narrow">/.test(s);
-    assert.equal(narrow, singleColumn, `${p}: <main class="column-narrow"> iff the workspace is one column`);
-  }
+test("every page uses the one full content width", () => {
+  for (const [p, s] of Object.entries(html)) assert.match(s, /\n    <main>\n/, `${p}: <main> takes no width class`);
   assert.match(css, /main > :not\(\.intro\)\s*{\s*max-width: var\(--column\);/);
   for (const block of [".brief", ".more-tools", ".privacy-layout", ".import-layout"]) {
     const rule = css.match(new RegExp(`\\n${block.replace(".", "\\.")} {([^}]*)}`));

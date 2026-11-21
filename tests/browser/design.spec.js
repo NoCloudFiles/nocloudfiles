@@ -312,18 +312,17 @@ test("blocks on each page share one right edge at desktop width", async ({ page 
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const path of pages) {
     await page.goto(path);
-    const { edges, widths, narrow } = await page.evaluate(() => {
+    const { edges, widths } = await page.evaluate(() => {
       const blocks = [...document.querySelectorAll("main > :not(.intro)")].filter(
         (e) => e.getBoundingClientRect().width > 0,
       );
       return {
         edges: [...new Set(blocks.map((e) => Math.round(e.getBoundingClientRect().right)))],
         widths: [...new Set(blocks.map((e) => Math.round(e.getBoundingClientRect().width)))],
-        narrow: document.querySelector("main").classList.contains("column-narrow"),
       };
     });
     expect(edges, `${path} right edges`).toHaveLength(1);
-    expect(widths, `${path} block widths`).toEqual([narrow ? 880 : 1136]);
+    expect(widths, `${path} block widths`).toEqual([1136]);
   }
 });
 

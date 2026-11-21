@@ -29,7 +29,6 @@
   --radius-control: 8px;
   --radius-panel: 14px;
   --page-max: 1136px;
-  --column-narrow: 880px;
   --gutter: 24px;
 
   color-scheme: light;
@@ -181,9 +180,6 @@ main {
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
   padding: 0 var(--gutter) 24px;
-}
-main.column-narrow {
-  --column: var(--column-narrow);
 }
 main > :not(.intro) {
   max-width: var(--column);
