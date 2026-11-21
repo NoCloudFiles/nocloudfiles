@@ -94,3 +94,21 @@ test("analytics records bounded csv_diff events without leaking filenames or cel
   ).toBe(true);
   expect(JSON.stringify(events)).not.toMatch(/secret-payroll|EMP-999|CONFIDENTIAL|5250/);
 });
+
+test("download preserves schema changes and distinct two-column keys", async ({ page }) => {
+  await page.goto("/csv-diff/");
+  await page.locator("#before-input").fill("a,b,value,old\nA / B,C,1,x\nA,B / C,2,y");
+  await page.locator("#after-input").fill("a,b,value,new\nA / B,C,3,x\nA,B / C,4,y");
+  await expect(page.locator("#diff-key1")).toHaveValue("a");
+  await page.locator("#diff-key2").selectOption("b");
+  await page.locator("#diff-compare").click();
+  await expect(page.locator("#diff-preview")).toContainText("Column removed");
+  await expect(page.locator("#diff-preview")).toContainText("Column added");
+  const pending = page.waitForEvent("download");
+  await page.locator("#diff-download").click();
+  const text = await readFile(await (await pending).path(), "utf8");
+  expect(text).toContain('"column_removed","","old","",""');
+  expect(text).toContain('"column_added","","new","",""');
+  expect(text).toContain('"modified","[""A / B"",""C""]","value","1","3"');
+  expect(text).toContain('"modified","[""A"",""B / C""]","value","2","4"');
+});

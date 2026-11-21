@@ -151,7 +151,9 @@ async function parseOriginal(file) {
   return { type, tags, motion, hdr, opaque, losslessJpeg };
 }
 async function encodeWithCanvas(img) {
-  let dims = canvasDimensions(img.naturalWidth, img.naturalHeight);
+  const width = img.naturalWidth ?? img.width;
+  const height = img.naturalHeight ?? img.height;
+  let dims = canvasDimensions(width, height);
   for (let attempt = 0; attempt < 4; attempt++) {
     const c = document.createElement("canvas");
     c.width = dims.width;
@@ -176,7 +178,7 @@ async function encodeWithCanvas(img) {
     }
     const nextMax = Math.floor((dims.width * dims.height) / 2);
     if (nextMax < 250_000) break;
-    dims = canvasDimensions(img.naturalWidth, img.naturalHeight, nextMax);
+    dims = canvasDimensions(width, height, nextMax);
   }
   throw Error("encode");
 }
@@ -222,7 +224,8 @@ function buildErrorMessage(error) {
 function bindBuilder({
   id,
   img,
-  losslessJpeg,
+  preparedJpeg,
+  preparedDims,
   controls,
   build,
   fictional,
@@ -242,8 +245,8 @@ function bindBuilder({
     }
     fictional.disabled = true;
     try {
-      let jpeg = losslessJpeg;
-      let scaledDims = null;
+      let jpeg = preparedJpeg;
+      let scaledDims = preparedDims;
       if (!jpeg) {
         const encoded = await encodeWithCanvas(img);
         if (id !== revision) return;
@@ -316,10 +319,21 @@ async function inspect(file, id) {
     await parseOriginal(file);
   if (id !== revision) return;
   let source = file;
+  let preparedJpeg = losslessJpeg;
+  let preparedDims = null;
   if (type === "heic") {
     const { heicTo } = await import("heic-to/csp");
     if (id !== revision) return;
-    source = await heicTo({ blob: file, type: "image/jpeg", quality: 0.97 });
+    const bitmap = await heicTo({ blob: file, type: "bitmap", options: {} });
+    try {
+      if (id !== revision) return;
+      const encoded = await encodeWithCanvas(bitmap);
+      preparedJpeg = encoded.blob;
+      source = preparedJpeg;
+      if (encoded.scaled) preparedDims = encoded;
+    } finally {
+      bitmap.close();
+    }
   }
   if (id !== revision) return;
   const img = new Image();
@@ -494,7 +508,8 @@ async function inspect(file, id) {
   bindBuilder({
     id,
     img,
-    losslessJpeg,
+    preparedJpeg,
+    preparedDims,
     controls,
     build,
     fictional,

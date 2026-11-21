@@ -56,6 +56,8 @@ const sideLabel = (side) =>
     : tr("修改后新表", "Updated table (After)");
 
 const changeLabels = {
+  column_removed: tr("删除列", "Column removed"),
+  column_added: tr("新增列", "Column added"),
   wiped: tr("已清空", "Wiped"),
   modified: tr("已修改", "Modified"),
   removed: tr("已删除行", "Removed"),

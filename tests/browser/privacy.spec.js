@@ -114,3 +114,26 @@ test("invalid files recover; analytics reports bounded stages after consent", as
     /private-name|Private Author|25\.034/,
   );
 });
+
+test("24 MP HEIC exports within a constrained canvas budget", async ({ page }) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (...args) {
+      if (this.width * this.height > 16_777_216) return null;
+      return getContext.apply(this, args);
+    };
+  });
+  await page.goto("/photo-privacy/");
+  await page.locator("#photo").setInputFiles("tests/fixtures/solid-24mp.heic");
+  const make = page.getByRole("button", { name: "Create private copy" });
+  await expect(make).toBeEnabled({ timeout: 20000 });
+  await make.click();
+  await expect(page.getByText(/Scaled proportionally/)).toBeVisible();
+  const pending = page.waitForEvent("download");
+  await page.getByRole("link", { name: "Download still JPEG" }).click();
+  const image = ExifReader.load(await readFile(await (await pending).path()), { expanded: true });
+  const width = image.file["Image Width"].value;
+  const height = image.file["Image Height"].value;
+  expect(width * height).toBeLessThanOrEqual(16_777_216);
+  expect(width / height).toBeCloseTo(1.5, 2);
+});

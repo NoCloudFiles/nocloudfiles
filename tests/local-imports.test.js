@@ -191,7 +191,8 @@ test("vCard trims VERSION, decodes BASE64/B readable fields, preserves structure
   assert.deepEqual(cards[1].nameParts, ["Lin", "Alex", "", "", ""]);
   assert.deepEqual(cards[1].fields[0].types, ["CELL"]);
 
-  const out = writeCards(cards);
+  assert.doesNotMatch(writeCards(cards), /N:Lin;Alex/);
+  const out = writeCards(cards.map(card => ({ ...card, includeStructuredName: true })));
   assert.match(out, /N:张;三;;先生;/);
   assert.match(out, /N:Lin;Alex;;;/);
   assert.match(out, /\r\nTEL:00123\r\n/);

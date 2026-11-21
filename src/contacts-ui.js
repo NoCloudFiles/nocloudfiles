@@ -56,6 +56,18 @@ function selected() {
     const card = cards[index],
       group = element("fieldset");
     group.append(element("legend", card.name));
+    if (card.nameParts) {
+      const details = card.nameParts.filter(Boolean).join(" · ");
+      const label = tr("原始结构化姓名", "Original structured name") + " · " + details;
+      group.append(
+        tick(label, set.has("N"), (on) => {
+          if (on) set.add("N");
+          else set.delete("N");
+          clearOutput();
+          updateFieldActions();
+        }),
+      );
+    }
     for (const [i, f] of card.fields.entries()) {
       const label =
         (names[f.key] || f.key) +
@@ -202,6 +214,7 @@ get("build").onclick = () => {
     const selection = Array.from(chosen, ([index, fields]) => ({
       name: cards[index].name,
       nameParts: cards[index].nameParts,
+      includeStructuredName: fields.has("N"),
       fields: cards[index].fields.filter((_, i) => fields.has(i)),
     }));
     const vcf = writeCards(selection);

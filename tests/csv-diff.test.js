@@ -82,9 +82,9 @@ test("composite-key matching pairs Handle + Option1 Value without separator coll
   assert.equal(r.modifiedRows, 2);
   assert.equal(r.addedRows, 0);
   assert.equal(r.removedRows, 0);
-  assert.equal(r.cellDiffs[0].rowKey, "tee / M");
+  assert.deepEqual(JSON.parse(r.cellDiffs[0].rowKey), ["tee", "M"]);
   assert.equal(r.cellDiffs[0].afterValue, "16.50");
-  assert.equal(r.cellDiffs[1].rowKey, "a / b / c");
+  assert.deepEqual(JSON.parse(r.cellDiffs[1].rowKey), ["a", "b / c"]);
   assert.equal(r.cellDiffs[1].afterValue, "21.00");
 });
 
@@ -458,4 +458,18 @@ test("exportDiffCsv round-trips with BOM, CRLF, quoted cells, and safe formula h
     (r) => r[2] === "formula_minus",
   );
   assert.equal(preservedMinusRow[4], "-1+1");
+});
+
+test("schema-only changes survive CSV download", () => {
+  const diff = compareCsvTexts("id,old\n1,A", "id,new\n1,B", {keyColumns:["id"]});
+  const rows = inspectCsv(exportDiffCsv(diff)).rows;
+  assert.deepEqual(rows.slice(1), [
+    ["column_removed", "", "old", "", ""],
+    ["column_added", "", "new", "", ""],
+  ]);
+});
+test("downloaded composite keys identify each original row", () => {
+  const diff = compareCsvTexts("a,b,v\nA / B,C,1\nA,B / C,2", "a,b,v\nA / B,C,3\nA,B / C,4", {keyColumns:["a","b"]});
+  const rows = inspectCsv(exportDiffCsv(diff)).rows.slice(1);
+  assert.deepEqual(rows.map(row => JSON.parse(row[1])), [["A / B","C"],["A","B / C"]]);
 });

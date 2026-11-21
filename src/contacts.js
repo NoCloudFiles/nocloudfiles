@@ -274,10 +274,10 @@ export function parseCards(buffer) {
 }
 export function writeCards(selection) {
   const lines = [];
-  for (const { name, nameParts, fields } of selection) {
+  for (const { name, nameParts, fields, includeStructuredName = false } of selection) {
     const n = escapeText(name);
     const structuredN =
-      Array.isArray(nameParts) &&
+      includeStructuredName && Array.isArray(nameParts) &&
       nameParts.some((p) => String(p ?? "").trim())
         ? Array.from({ length: 5 }, (_, i) =>
             escapeText(String(nameParts[i] ?? "")),

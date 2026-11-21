@@ -41,7 +41,7 @@ test("backup search selects only one person and one phone, export matches previe
   });
   await page.goto("/zh/vcf-select/");
   const v =
-    "BEGIN:VCARD\r\nVERSION:2.1\r\nFN;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:=E5=BC=\r\n=A0=E4=B8=89\r\nTEL:00123\r\nTEL:999\r\nNOTE:不要分享\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:3.0\r\nFN:Other\r\nEND:VCARD";
+    "BEGIN:VCARD\r\nVERSION:2.1\r\nFN;CHARSET=UTF-8;ENCODING=QUOTED-PRINTABLE:=E5=BC=\r\n=A0=E4=B8=89\r\nN:HiddenSurname;LegalName;;;\r\nTEL:00123\r\nTEL:999\r\nNOTE:不要分享\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:3.0\r\nFN:Other\r\nEND:VCARD";
   await page
     .locator("#file")
     .setInputFiles({
@@ -55,8 +55,11 @@ test("backup search selects only one person and one phone, export matches previe
   await page.locator("#build").click();
   const text = await readDownload(page, "下载所选联系人");
   expect(text).toContain("TEL:00123");
-  expect(text).not.toMatch(/Other|999|NOTE|不要分享/);
+  expect(text).not.toMatch(/Other|999|NOTE|不要分享|HiddenSurname|LegalName/);
   expect(await page.locator("#raw").textContent()).toBe(text);
+  await page.getByLabel(/HiddenSurname/).check();
+  await page.locator("#build").click();
+  expect(await readDownload(page, "下载所选联系人")).toContain("N:HiddenSurname;LegalName;;;");
   await page.getByLabel("电话 · 00123").uncheck();
   await expect(page.locator("#links a")).toHaveCount(0);
   expect(writes).toEqual([]);

@@ -188,7 +188,7 @@ function indexTableRows(rows, keyIndices, side) {
         firstRow: existing.rowNumber,
       };
     }
-    const displayKey = parts.length === 1 ? parts[0] : parts.join(" / ");
+    const displayKey = parts.length === 1 ? parts[0] : mapKey;
     map.set(mapKey, { rowNumber: i + 1, row, displayKey });
   }
   return { ok: true, map };
@@ -510,6 +510,8 @@ export function compareTables(
   ]);
   const reportRows = [
     ...wipedReport,
+    ...removedColumns.map(column => ["column_removed", "", column, "", ""]),
+    ...addedColumns.map(column => ["column_added", "", column, "", ""]),
     ...modifiedReport,
     ...removedReport,
     ...addedReport,
