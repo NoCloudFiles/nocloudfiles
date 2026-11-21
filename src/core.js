@@ -1,3 +1,4 @@
+import {tr} from './i18n.js';
 export function declaredPixels(bytes,type){
  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
  if(type==='png'&&bytes.length>=24)return view.getUint32(16)*view.getUint32(20);
@@ -21,10 +22,10 @@ export function declaredPixels(bytes,type){
 }
 export function validateFiles(incoming, existing=[]) {
   const files=[...existing,...incoming];
-  if(files.length>20) return '一次最多整理 20 张照片，请分批处理。';
-  if(files.some(f=>!Number.isFinite(f.size)||f.size<=0)) return '有空文件，无法读取。请重新选择原照片。';
-  if(files.some(f=>f.size>20_000_000)) return '单张照片不能超过 20 MB，请先缩小这张照片。';
-  if(files.reduce((n,f)=>n+f.size,0)>80_000_000) return '照片总大小不能超过 80 MB，请分批处理。';
+  if(files.length>20) return tr('一次最多整理 20 张照片，请分批处理。','You can use up to 20 photos at a time. Please split them into batches.');
+  if(files.some(f=>!Number.isFinite(f.size)||f.size<=0)) return tr('有空文件，无法读取。请重新选择原照片。','An empty file cannot be read. Please choose the original photo.');
+  if(files.some(f=>f.size>20_000_000)) return tr('单张照片不能超过 20 MB，请先缩小这张照片。','Each photo must be 20 MB or smaller. Please resize it first.');
+  if(files.reduce((n,f)=>n+f.size,0)>80_000_000) return tr('照片总大小不能超过 80 MB，请分批处理。','Photos must total 80 MB or less. Please split them into batches.');
   return null;
 }
 export function sniffImage(bytes) {
@@ -36,14 +37,14 @@ export function sniffImage(bytes) {
   return null;
 }
 export function fitOnPage(width,height) {
-  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)throw Error('无效图片尺寸');
+  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)throw Error(tr('无效图片尺寸','Invalid image dimensions'));
   const [pageWidth,pageHeight]=width>height?[841.89,595.28]:[595.28,841.89];
   const scale=Math.min((pageWidth-40)/width,(pageHeight-40)/height);
   return {pageWidth,pageHeight,width:width*scale,height:height*scale,x:(pageWidth-width*scale)/2,y:(pageHeight-height*scale)/2};
 }
 export function cropPixels(width,height,{left=0,right=0,top=0,bottom=0}={}) {
   const values=[left,right,top,bottom];
-  if(!values.every(n=>Number.isFinite(n)&&n>=0&&n<1)||left+right>=.95||top+bottom>=.95)throw Error('裁剪范围无效');
+  if(!values.every(n=>Number.isFinite(n)&&n>=0&&n<1)||left+right>=.95||top+bottom>=.95)throw Error(tr('裁剪范围无效','Invalid crop range'));
   return {x:Math.round(width*left),y:Math.round(height*top),width:Math.max(1,Math.round(width*(1-left-right))),height:Math.max(1,Math.round(height*(1-top-bottom)))};
 }
 export function moveItem(items,index,offset) {
@@ -53,12 +54,12 @@ export function moveItem(items,index,offset) {
 }
 export const PROFILES=[{edge:2400,quality:.9},{edge:2000,quality:.82},{edge:1700,quality:.72},{edge:1400,quality:.62},{edge:1100,quality:.5}];
 export async function fitBudget(build,limit,{signal,onAttempt=()=>{}}={}) {
-  if(!Number.isFinite(limit)||limit<=0)throw Error('文件大小上限无效');
+  if(!Number.isFinite(limit)||limit<=0)throw Error(tr('文件大小上限无效','Invalid file size limit'));
   let result;
   for(let i=0;i<PROFILES.length;i++) {
     signal?.throwIfAborted();onAttempt(i,PROFILES.length);
     const bytes=await build(PROFILES[i]);signal?.throwIfAborted();
-    if(!(bytes instanceof Uint8Array)||!bytes.length)throw Error('没有生成有效 PDF');
+    if(!(bytes instanceof Uint8Array)||!bytes.length)throw Error(tr('没有生成有效 PDF','No valid PDF was generated'));
     result={bytes,profile:PROFILES[i],fits:bytes.length<=limit};
     if(result.fits)return result;
   }

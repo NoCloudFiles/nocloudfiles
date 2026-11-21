@@ -1,0 +1,57 @@
+import {holdEncoding,releaseEncoding} from './hold-encoding.js';
+import {test,expect} from '@playwright/test';
+test('English is the default and Chinese is an explicit alternative',async({page})=>{
+ await page.goto('/');await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.getByRole('button',{name:'Try an example',exact:true}).click();
+ await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();
+ await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Clear photos',exact:true}).click();
+ await page.getByRole('link',{name:'中文',exact:true}).click();
+ await expect(page.locator('html')).toHaveAttribute('lang','zh-CN');
+ await expect(page.getByRole('button',{name:'用示例试一试'})).toBeVisible();
+});
+test('consent gates analytics; sample and file events remain separate and private',async({page})=>{
+ const external=[];page.on('request',r=>{if(/google(tagmanager|-analytics)/.test(r.url()))external.push(r.url());});
+ await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
+ await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:'window.__tagLoaded=true;'}));
+ await page.goto('/');await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();expect(external).toEqual([]);
+ await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__tagLoaded)).toBe(true);
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+ const event=page.waitForEvent('download');await page.getByRole('link',{name:'Download PDF',exact:true}).click();await event;
+ const event2=page.waitForEvent('download');await page.getByRole('link',{name:'Download PDF',exact:true}).click();await event2;
+ const events=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').map(x=>[x[1],x[2]]));
+ expect(events.filter(x=>x[0]==='download_click')).toHaveLength(1);expect(events.find(x=>x[0]==='pdf_ready')[1].input_source).toBe('sample');
+ await page.getByRole('button',{name:'Clear photos',exact:true}).click();
+ await page.getByLabel('Choose photos',{exact:true}).setInputFiles('tests/fixtures/synthetic.png');await expect(page.getByText('1 page',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+ const all=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').map(x=>[x[1],x[2]]));
+ expect(all.filter(x=>x[0]==='pdf_ready').at(-1)[1].input_source).toBe('file');expect(JSON.stringify(all)).not.toContain('synthetic');
+ await page.getByRole('button',{name:'Analytics settings',exact:true}).click();await page.getByRole('button',{name:'Decline analytics',exact:true}).click();
+ const count=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').length);
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();expect(await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').length)).toBe(count);
+});
+test('blocked analytics never blocks the photo workflow',async({page})=>{
+ await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
+ await page.route('https://www.googletagmanager.com/**',r=>r.abort());
+ await page.goto('/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();await page.getByRole('button',{name:'Try an example',exact:true}).click();
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+});
+test('mixed sources, bounded feedback and cancellation have distinct events',async({page})=>{
+ await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
+ await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:''}));
+ await page.goto('/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
+ await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
+ await page.getByLabel('Choose photos',{exact:true}).setInputFiles('tests/fixtures/synthetic.png');await expect(page.getByText('4 pages',{exact:true})).toBeVisible();
+ await holdEncoding(page);await page.getByRole('button',{name:'Create PDF',exact:true}).click();await page.getByRole('button',{name:'Cancel processing',exact:true}).click();await releaseEncoding(page);
+ await expect(page.locator('#error')).toContainText('Cancelled');
+ let events=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').map(x=>[x[1],x[2]]));
+ expect(events.some(x=>x[0]==='generate_cancel')).toBe(true);expect(events.some(x=>x[0]==='pdf_ready')).toBe(false);
+ await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Did this help?',exact:true}).click();
+ await page.getByRole('button',{name:'It helped',exact:true}).click();await expect(page.locator('#feedback-status')).toContainText('Thank you');
+ events=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').map(x=>[x[1],x[2]]));
+ expect(events.filter(x=>x[0]==='pdf_ready').at(-1)[1].input_source).toBe('mixed');
+ expect(events.filter(x=>x[0]==='feedback_response')).toEqual([['feedback_response',{input_source:'mixed',feedback_result:'helped',interface_language:'en'}]]);
+});

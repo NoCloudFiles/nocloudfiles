@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://paper-ready.1986liubo.workers.dev/sitemap.xml

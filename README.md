@@ -15,13 +15,13 @@
 
 当前输入是照片，不处理已有PDF、Word、签名表单。输出是图片型PDF，不提供OCR或可编辑文本；不能替代要求可检索文本或指定原始表单的材料。只验证字节限制，不保证申请获批或任何网站一定接受。
 
-限制：最多20张、单文件20MB、总输入80MB、单图最多3600万像素。限制以十进制MB计算。读取失败不悄悄省略页面。页面修改后立即撤销旧下载结果；生成时锁定编辑、可取消。没有账号、支付、广告、追踪或文档上传接口。
+限制：最多20张、单文件20MB、总输入80MB、单图最多3600万像素。限制以十进制MB计算。读取失败不悄悄省略页面。页面修改后立即撤销旧下载结果；生成时锁定编辑、可取消。没有账号、支付、广告或文档上传接口；仅在用户同意后启用可选 GA4 统计。
 
 ## 实现与完整性
 
 静态Vite网页，pdf-lib生成PDF，heic-to在本地解码HEIC。每次只解码一张图；逐档降低分辨率与JPEG质量，并检查最终完整PDF字节数。最低档仍超限时明确失败，不无限降低清晰度。输出不复制原图EXIF/GPS或原文件名元数据；用户必须在下载前自行检查文字清晰度。
 
-所有代码和依赖由同一站点加载；部署使用CSP限制网络写出，无跨域API。Cloudflare仍处理正常页面访问的网络元信息，不能据此宣称访问完全匿名。
+文档处理代码和依赖由同一站点加载。可选 GA4 会加载 Google 脚本并发送受限使用事件；部署使用 CSP 限定允许的来源。Cloudflare仍处理正常页面访问的网络元信息，不能据此宣称访问完全匿名。
 
 ## 验证与运行
 
@@ -46,3 +46,17 @@ wrangler deploy
 已发布：https://paper-ready.1986liubo.workers.dev
 
 独立Cloudflare Worker静态资源项目，不覆盖MSP站点。本地仓库的发布记录和最终验证结果见 `ACCEPTANCE.md`；公开源码包包含应用、测试及部署配置。
+
+## Languages and measurement (2026-11-21)
+
+English is the default at `/`; simplified Chinese is at `/zh/`. Each has a canonical URL and reciprocal language links. `robots.txt` and a two-route sitemap are included. This does not establish Google indexing or search demand; no platform-specific landing-page matrix was created.
+
+GA4 property `565307803`, stream `16385255213`, measurement ID `G-94L2V73P1G`. Public configuration is in `public/analytics-config.json`; it is not a credential. Enhanced measurement is disabled in GA. Event-scoped dimensions: `input_source`, `interface_language`, `error_code`, `feedback_result`.
+
+No GA script or event is sent until explicit consent. Consent is the only localStorage value introduced. Declining or blocking analytics never blocks processing. Settings allow withdrawal; subsequent custom events stop and host GA cookies are expired. Google and Cloudflare still process normal connection information; do not describe analytics as anonymous or zero-risk.
+
+Events: `tool_start` (first photos added to an empty session), `photos_added`, `generate_start`, `pdf_ready` (actual output fits the byte limit), `generate_error`, `generate_cancel`, `download_click` (once per generated output), `feedback_response` (one fixed category per output). All task events carry `input_source=sample|file|mixed` and `interface_language=en|zh`. No filenames, material contents, raw exception messages or free-text feedback are sent. Page location excludes query/fragment; referrer retains origin only. The source classification describes how input was selected, not proof that a file is a real customer task.
+
+Observation: inspect weekly cohorts with `input_source=file`, keep `mixed` separate and exclude `sample`. Compare sessions that reached `generate_start` with sessions that reached `pdf_ready` and `download_click`; do not divide raw event totals or sum repeated attempts as people. Count fixed negative feedback categories and errors to guide fixes. Consent can occur mid-task, no pre-consent events are replayed, and blockers suppress events, so the measured cohort is incomplete and selection-biased. Download clicks do not prove a file was saved or accepted by another website. Actual usefulness remains unproven without real task evidence.
+
+Verification uses synthetic samples and `?analytics_debug=1` for debug tagging. There is no active exclusion filter: debug tagging alone does not guarantee test traffic is absent from ordinary reports. Exclude November 21 launch QA and sample runs when assessing real usage. Automated consent tests mock the GA script/config; their passing results are not server receipt evidence. See `ACCEPTANCE.md` for the separate live receipt check.

@@ -1,0 +1,62 @@
+{
+  "dryRun": false,
+  "checkedAt": "2026-11-21T03:03:37.156Z",
+  "externalBeforeChoice": 0,
+  "errors": [],
+  "requests": [
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "page_view",
+      "source": null,
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    },
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "tool_start",
+      "source": "sample",
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    },
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "photos_added",
+      "source": "sample",
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    },
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "generate_start",
+      "source": "sample",
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    },
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "pdf_ready",
+      "source": "sample",
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    },
+    {
+      "status": 204,
+      "measurementId": "G-94L2V73P1G",
+      "event": "download_click",
+      "source": "sample",
+      "language": "en",
+      "page": "https://paper-ready.1986liubo.workers.dev/",
+      "debug": "true"
+    }
+  ]
+}

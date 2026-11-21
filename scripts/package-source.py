@@ -16,11 +16,11 @@ notices.append('\n\nheic-to 1.4.2: LGPL-3.0-or-later, unmodified npm distributio
 with tarfile.open(public/'heic-to-source.tgz','w:gz') as archive:
     archive.add(root/'node_modules/heic-to',arcname='heic-to-1.4.2')
 with zipfile.ZipFile(public/'source.zip','w',zipfile.ZIP_DEFLATED) as archive:
-    for name in ['src','scripts','tests','public']:
+    for name in ['src','scripts','tests','public','zh']:
         for p in (root/name).rglob('*'):
             if not p.is_file() or p.name in ['source.zip','heic-to-source.tgz']:
                 continue
             archive.write(p,p.relative_to(root))
-    for name in ['package.json','package-lock.json','playwright.config.js','playwright.live.config.js','index.html','wrangler.jsonc','README.md','LICENSE','.gitignore']:
+    for name in ['package.json','package-lock.json','playwright.config.js','playwright.live.config.js','vite.config.js','index.html','wrangler.jsonc','README.md','LICENSE','.gitignore']:
         archive.write(root/name,name)
 print('Packaged source, dependency distribution and license notices.')
