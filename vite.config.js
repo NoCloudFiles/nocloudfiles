@@ -1,2 +1,2 @@
 import {defineConfig} from 'vite';
-export default defineConfig({build:{rollupOptions:{input:{privacy:'photo-privacy/index.html',zhPrivacy:'zh/photo-privacy/index.html',main:'index.html',zh:'zh/index.html',pdf:'photos-to-pdf/index.html',zhPdf:'zh/photos-to-pdf/index.html',csv:'csv-check/index.html',zhCsv:'zh/csv-check/index.html'}}}});
+export default defineConfig({build:{rollupOptions:{input:{en0:'schedule-to-calendar/index.html',en1:'vcf-select/index.html',zh0:'zh/schedule-to-calendar/index.html',zh1:'zh/vcf-select/index.html',privacy:'photo-privacy/index.html',zhPrivacy:'zh/photo-privacy/index.html',main:'index.html',zh:'zh/index.html',pdf:'photos-to-pdf/index.html',zhPdf:'zh/photos-to-pdf/index.html',csv:'csv-check/index.html',zhCsv:'zh/csv-check/index.html'}}}});

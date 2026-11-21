@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN" data-tool="schedule_to_calendar">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>排班表转日历 — NoCloudFiles</title>
+    <meta
+      name="description"
+      content="粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。"
+    />
+    <link
+      rel="canonical"
+      href="https://nocloudfiles.com/zh/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nocloudfiles.com/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-Hans"
+      href="https://nocloudfiles.com/zh/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nocloudfiles.com/schedule-to-calendar/"
+    />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/zh/">NoCloudFiles</a>
+      <span class="header-note">免费 · 无需注册</span>
+      <a
+        class="language-switch"
+        href="/schedule-to-calendar/"
+        lang="en"
+        hreflang="en"
+        ><svg
+          aria-hidden="true"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
+        ><span>English</span></a
+      >
+    </header>
+    <main class="import-tool">
+      <section class="hero tool-intro">
+        <h1>排班表转日历</h1>
+        <p>粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。</p>
+      </section>
+      <section class="tool-card">
+        <label for="table">粘贴表格，包含首行表头</label
+        ><textarea id="table" spellcheck="false"></textarea>
+        <label for="file">或打开 CSV / TSV（2 MB）</label
+        ><input type="file" id="file" accept=".csv,.tsv,.txt" /><button
+          id="sample"
+        >
+          试用示例</button
+        ><button id="map">选择列</button>
+        <section id="mapping" hidden>
+          <h2>对应表格列</h2>
+          <div id="columns"></div>
+          <label
+            >斜线日期顺序<select id="order">
+              <option value="">遇到 03/04/2027 时请选择</option>
+              <option value="mdy">MM/DD/YYYY</option>
+              <option value="dmy">DD/MM/YYYY</option>
+            </select></label
+          >
+          <p>按目标日历的本地钟点导入。时间留空表示全天事件。</p>
+          <button id="review">预览事件</button>
+        </section>
+        <p role="status" id="status"></p>
+        <pre id="preview"></pre>
+        <aside id="guide" hidden>
+          <p>
+            建议新建独立的“排班”日历，导入后核对数量和时间。如有误，删除该独立日历即可撤销整批事件。
+          </p>
+          <p>
+            iPhone：打开 ICS，核对系统提供添加的事件数。如果只有预览，可在 Mac
+            日历导入后通过 iCloud 同步。Android：在电脑打开 Google 日历 → 设置 →
+            导入和导出，再在手机同步所选日历。
+          </p>
+        </aside>
+        <div id="links"></div>
+      </section>
+    </main>
+    <footer>
+      <span>NoCloudFiles · 内容留在你的设备上</span>
+      <div class="footer-links">
+        <a href="/about.html">隐私与说明</a
+        ><a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
+      </div>
+    </footer>
+    <script type="module" src="/src/schedule-ui.js"></script>
+  </body>
+</html>
