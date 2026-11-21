@@ -2,20 +2,20 @@ import {holdEncoding,releaseEncoding} from './hold-encoding.js';
 import {test,expect} from '@playwright/test';
 test('English is the default and Chinese is an explicit alternative',async({page})=>{
  await page.goto('/photos-to-pdf/');await expect(page.locator('html')).toHaveAttribute('lang','en');
- await page.getByRole('button',{name:'Try an example',exact:true}).click();
+ await page.getByRole('button',{name:'Try a sample',exact:true}).click();
  await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();
  await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Clear photos',exact:true}).click();
  await page.getByRole('link',{name:'中文',exact:true}).click();
  await expect(page.locator('html')).toHaveAttribute('lang','zh-CN');
- await expect(page.getByRole('button',{name:'用示例试一试'})).toBeVisible();
+ await expect(page.getByRole('button',{name:'试用示例'})).toBeVisible();
 });
 test('consent gates analytics; sample and file events remain separate and private',async({page})=>{
  const external=[];page.on('request',r=>{if(/google(tagmanager|-analytics)/.test(r.url()))external.push(r.url());});
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:'window.__tagLoaded=true;'}));
- await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();expect(external).toEqual([]);
+ await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Try a sample',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();expect(external).toEqual([]);
  await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
  await expect.poll(()=>page.evaluate(()=>window.__tagLoaded)).toBe(true);
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
@@ -35,14 +35,14 @@ test('consent gates analytics; sample and file events remain separate and privat
 test('blocked analytics never blocks the photo workflow',async({page})=>{
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.abort());
- await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();await page.getByRole('button',{name:'Try an example',exact:true}).click();
+ await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();await page.getByRole('button',{name:'Try a sample',exact:true}).click();
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
 });
 test('mixed sources, bounded feedback and cancellation have distinct events',async({page})=>{
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:''}));
  await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
- await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Try a sample',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
  await page.getByLabel('Choose photos',{exact:true}).setInputFiles('tests/fixtures/synthetic.png');await expect(page.getByText('4 pages',{exact:true})).toBeVisible();
  await holdEncoding(page);await page.getByRole('button',{name:'Create PDF',exact:true}).click();await page.getByRole('button',{name:'Cancel processing',exact:true}).click();await releaseEncoding(page);
  await expect(page.locator('#error')).toContainText('Cancelled');

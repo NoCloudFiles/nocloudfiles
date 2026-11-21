@@ -29,6 +29,7 @@
   --radius-control: 8px;
   --radius-panel: 14px;
   --page-max: 1136px;
+  --column-narrow: 880px;
   --gutter: 24px;
 
   color-scheme: light;
@@ -175,9 +176,17 @@ samp,
 
 /* ---------- Page frame ---------- */
 main {
+  /* One content width per page: every block below the intro shares this right edge. */
+  --column: var(--page-max);
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
   padding: 0 var(--gutter) 24px;
+}
+main.column-narrow {
+  --column: var(--column-narrow);
+}
+main > :not(.intro) {
+  max-width: var(--column);
 }
 .intro {
   max-width: 760px;
@@ -213,8 +222,8 @@ main {
   font-size: 17px;
   line-height: 1.6;
   color: var(--ink-2);
-  max-width: 680px;
   margin: 0;
+  text-wrap: pretty;
 }
 .section {
   margin: 48px 0;
@@ -928,9 +937,6 @@ details > p {
 }
 
 /* ---------- Photo privacy ---------- */
-.privacy-layout {
-  max-width: 880px;
-}
 .privacy-preview {
   display: block;
   max-width: 100%;
@@ -981,9 +987,6 @@ details > p {
 }
 
 /* ---------- Import tools (schedule, contacts) ---------- */
-.import-layout {
-  max-width: 880px;
-}
 .import-layout textarea {
   min-height: 160px;
 }
@@ -1189,7 +1192,6 @@ input[type="search"] {
 .brief {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 880px;
   margin: 0 0 24px;
   border: 1px solid var(--line);
   border-radius: var(--radius-panel);
@@ -1225,9 +1227,6 @@ input[type="search"] {
 }
 .howto li + li {
   margin-top: 4px;
-}
-.more-tools {
-  max-width: 880px;
 }
 .more-tools .task-index {
   margin-bottom: 0;

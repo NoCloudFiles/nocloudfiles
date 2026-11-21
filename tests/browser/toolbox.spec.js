@@ -5,7 +5,7 @@ test("home task index leads to the CSV tool", async ({
 }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Useful tools. No file uploads." }),
+    page.getByRole("heading", { name: "File tools that run in your browser" }),
   ).toBeVisible();
   await page.getByRole("link", { name: /A spreadsheet import keeps failing/ }).click();
   await expect(page.locator("h1")).toHaveText("Check and clean a CSV");
@@ -19,7 +19,7 @@ test("CSV example exports preserved identifiers, edits invalidate result, no con
   });
   await page.goto("/csv-check/");
   await page
-    .getByRole("button", { name: "Try an example", exact: true })
+    .getByRole("button", { name: "Try a sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Check CSV", exact: true }).click();
   await expect(page.locator("#csv-summary")).toContainText("3 records");
@@ -48,7 +48,7 @@ test("CSV consent events carry tool id and sample provenance without text", asyn
     .getByRole("button", { name: "Allow analytics", exact: true })
     .click();
   await page
-    .getByRole("button", { name: "Try an example", exact: true })
+    .getByRole("button", { name: "Try a sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Check CSV", exact: true }).click();
   await expect(page.locator("#csv-download")).toBeVisible();
@@ -81,7 +81,7 @@ test("CSV formula handling requires a choice and invalid bytes allow recovery", 
   await expect(page.locator("#csv-error")).toBeVisible();
   await expect(page.locator("#csv-download")).toBeHidden();
   await page
-    .getByRole("button", { name: "Try an example", exact: true })
+    .getByRole("button", { name: "Try a sample", exact: true })
     .click();
   await page.getByRole("button", { name: "Check CSV", exact: true }).click();
   await expect(page.locator("#csv-download")).toBeVisible();

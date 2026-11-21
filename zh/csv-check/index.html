@@ -23,7 +23,7 @@
       <section class="intro">
         <p class="eyebrow">CSV · 导入前先检查</p>
         <h1>检查并整理 CSV</h1>
-        <p class="lead">导入表格前发现格式问题，将可正确读取的 CSV 整理为 UTF-8、逗号分隔和一致的引号格式。数据留在本浏览器。</p>
+        <p class="lead">导入表格前先找出格式问题。文件能正确读取时，可另存一份 UTF-8、逗号分隔、引号统一的干净 CSV。</p>
       </section>
       <dl class="brief">
         <div><dt>需要准备</dt><dd>一个 CSV、TSV 文件或粘贴的表格文字，最多 2 MB</dd></div>
@@ -43,7 +43,7 @@
           <label class="or-divider" for="csv-input">或粘贴 CSV 文字</label>
           <textarea id="csv-input" spellcheck="false" autocomplete="off" placeholder="sku;amount&#10;00123;12.50"></textarea>
           <div class="actions">
-            <button id="csv-example">使用示例</button>
+            <button id="csv-example">试用示例</button>
             <button id="csv-clear">清空输入</button>
           </div>
           <p class="small">最多 20,000 条记录、200 列。不自动保存，不覆盖原文件。</p>
@@ -73,7 +73,7 @@
             </select>
           </div>
           <div class="field">
-            <label for="csv-formula">可能执行为公式的单元格</label>
+            <label for="csv-formula">疑似公式的单元格</label>
             <select id="csv-formula">
               <option value="ask">发现时暂停导出</option>
               <option value="escape">加前导单引号（会改变值）</option>

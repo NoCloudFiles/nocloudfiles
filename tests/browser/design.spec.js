@@ -150,7 +150,7 @@ test("a rejected photo is shown as an error state", async ({ page }) => {
 
 test("CSV result metrics show the detected separator and error count", async ({ page }) => {
   await page.goto("/csv-check/");
-  await page.getByRole("button", { name: "Try an example", exact: true }).click();
+  await page.getByRole("button", { name: "Try a sample", exact: true }).click();
   await page.getByRole("button", { name: "Check CSV", exact: true }).click();
   const metrics = page.locator("#csv-metrics .metric");
   await expect(metrics).toHaveCount(5);
@@ -180,7 +180,7 @@ test("a dropped file is reported as the user's own input, not the example", asyn
   );
   await page.goto("/csv-check/");
   await page.getByRole("button", { name: "Allow analytics", exact: true }).click();
-  await page.getByRole("button", { name: "Try an example", exact: true }).click();
+  await page.getByRole("button", { name: "Try a sample", exact: true }).click();
   await dropFiles(page, "#csv-drop", [
     { name: "secret-orders.csv", type: "text/csv", buffer: "id,qty\n0099,1" },
   ]);
@@ -304,5 +304,36 @@ test("the brief's help link opens the collapsed instructions", async ({ page }) 
     await expect(page.locator("#howto")).not.toHaveAttribute("open", "");
     await page.locator('.brief a[href="#howto"]').click();
     await expect(page.locator("#howto")).toHaveAttribute("open", "");
+  }
+});
+
+// DESIGN.md "Widths": below the intro, every block on a page ends at the same right edge.
+test("blocks on each page share one right edge at desktop width", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of pages) {
+    await page.goto(path);
+    const { edges, widths, narrow } = await page.evaluate(() => {
+      const blocks = [...document.querySelectorAll("main > :not(.intro)")].filter(
+        (e) => e.getBoundingClientRect().width > 0,
+      );
+      return {
+        edges: [...new Set(blocks.map((e) => Math.round(e.getBoundingClientRect().right)))],
+        widths: [...new Set(blocks.map((e) => Math.round(e.getBoundingClientRect().width)))],
+        narrow: document.querySelector("main").classList.contains("column-narrow"),
+      };
+    });
+    expect(edges, `${path} right edges`).toHaveLength(1);
+    expect(widths, `${path} block widths`).toEqual([narrow ? 880 : 1136]);
+  }
+});
+
+test("the home lead fits on one line at desktop width", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["/", "/zh/"]) {
+    await page.goto(path);
+    const lines = await page.locator(".lead").evaluate(
+      (e) => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight)),
+    );
+    expect(lines, path).toBe(1);
   }
 });

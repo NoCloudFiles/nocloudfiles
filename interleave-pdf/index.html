@@ -23,7 +23,7 @@
       <section class="intro">
         <p class="eyebrow">PDF scans · Front &amp; back</p>
         <h1>Mix front &amp; back scans into one PDF</h1>
-        <p class="lead">Interleave two single-sided scan PDFs into reading order—reversing the back stack if needed—without re-compressing pages or uploading files.</p>
+        <p class="lead">Merge the front-side and back-side PDFs from a single-sided scanner into one file in reading order. Pages are copied as they are, without re-compression.</p>
       </section>
       <dl class="brief">
         <div><dt>You need</dt><dd>Two PDFs from a single-sided scanner (front pages and back pages), up to 50 MB each</dd></div>
@@ -55,7 +55,7 @@
               </div>
             </div>
             <div class="notice error" id="error" role="alert" hidden></div>
-            <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>Your scans stay on your device</strong><p>Up to 50 MB per file, 80 MB and 500 pages combined. Originals stay unchanged; closing the page clears your work.</p></div></div>
+            <p class="small">Up to 50 MB per file, 80 MB and 500 pages combined. Originals are not changed.</p>
           </section>
           <aside class="panel side">
             <div class="panel-title"><span class="step">2</span><h2>Set page order</h2></div>
@@ -85,7 +85,7 @@
             <ul class="micro-list">
               <li>Copies pages directly without re-compression</li>
               <li>Preserves text layers and existing rotation</li>
-              <li>Appends extra pages instead of dropping them</li>
+              <li>Adds extra pages at the end if counts differ</li>
             </ul>
           </aside>
         </div>
@@ -120,7 +120,7 @@
             <li>Reverses the back file by default, or keeps it in forward order when needed.</li>
             <li>Optionally rotates all back pages by 180° while keeping each page's existing rotation.</li>
             <li>Copies original pages losslessly without rasterizing or re-compressing scans.</li>
-            <li>Flags page-count mismatches and appends trailing pages so no page is silently dropped.</li>
+            <li>Warns when the page counts differ and adds the extra pages at the end.</li>
             </ul>
           </div>
           <div class="scope-not">

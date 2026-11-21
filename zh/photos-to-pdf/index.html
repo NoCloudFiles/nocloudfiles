@@ -22,8 +22,8 @@
     <main>
       <section class="intro">
         <p class="eyebrow">照片转 PDF · 上传前整理</p>
-        <h1>几张照片，<br /><span class="accent">整理成一份上传用 PDF。</span></h1>
-        <p class="lead">排好顺序、转正方向，再按网站的大小要求整理。让提交材料这件小事，少一点来回折腾。</p>
+        <h1>把照片合成一份不超限的 PDF</h1>
+        <p class="lead">把材料照片合成 PDF，控制在 1 MB、2 MB 或你选择的大小以内。下载前可以排序、旋转和裁边。</p>
       </section>
       <dl class="brief">
         <div><dt>需要准备</dt><dd>JPG、PNG、WebP 或 HEIC 照片，最多 20 张</dd></div>
@@ -39,7 +39,7 @@
             <p class="small">也可以从手机相册或电脑中选择</p>
             <div class="actions">
               <button class="primary" id="choose">选择照片</button>
-              <button class="text-button" id="example">用示例试一试</button>
+              <button class="text-button" id="example">试用示例</button>
             </div>
             <p class="small">JPG / PNG / WebP / HEIC · 最多 20 张</p>
             <input hidden id="files" type="file" aria-label="选择照片" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple />
@@ -47,10 +47,9 @@
           <div class="notice error" id="error" role="alert" hidden></div>
           <div id="session" hidden>
             <div class="session-row"><strong id="count"></strong><button class="text-button" id="clear">清空照片</button></div>
-            <p class="small">按从左到右、从上到下的顺序生成，每张照片一页。</p>
+            <p class="small">按从左到右、从上到下的顺序生成，每张照片一页。不修改原文件。</p>
             <div class="photos" id="photos"></div>
           </div>
-          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>照片留在你的设备上</strong><p>处理过程不上传照片，不修改原文件。关闭页面后自动清空。</p></div></div>
         </section>
         <aside class="panel side">
           <div class="panel-title"><span class="step">2</span><h2>设置上传要求</h2></div>
@@ -122,7 +121,7 @@
             <li>每张照片单独一页，完整等比放入 A4。</li>
             <li>按实际 PDF 字节数核对你选择的上限。</li>
             <li>可排序、旋转，并裁去你选定的边缘。</li>
-            <li>无法达标时明确停止，不会悄悄漏掉页面。</li>
+            <li>无法达标时会明确停止，不会少放页面。</li>
             </ul>
           </div>
           <div class="scope-not">
@@ -139,7 +138,7 @@
       <section class="section faq">
         <h2>常见问题</h2>
         <details><summary>为什么不支持把所有文件都转成 PDF？</summary><p>这个工具专门处理照片。Word、可填写表单、数字签名和已有 PDF 有各自的结构，重新转成图片可能损坏重要信息，因此不在这里转换。输出也不适合明确要求可搜索文字的系统。</p></details>
-        <details><summary>照片太大或生成后仍超过限制怎么办？</summary><p>每张照片最多 20 MB，总共最多 80 MB；高分辨率照片请先缩小。若最低清晰度档位仍超限，工具会停止。请删掉不需要的页、裁去无关边缘，或在网站允许时分成几份提交。不会偷偷漏掉照片。</p></details>
+        <details><summary>照片太大或生成后仍超过限制怎么办？</summary><p>每张照片最多 20 MB，总共最多 80 MB；高分辨率照片请先缩小。若最低清晰度档位仍超限，工具会停止。请删掉不需要的页、裁去无关边缘，或在网站允许时分成几份提交。</p></details>
         <details><summary>隐私与免费使用</summary><p>无需注册，没有广告。只有你允许可选 Google Analytics 后，才会向 Google 发送使用事件和正常连接信息；不包含材料内容。照片、文件名与生成内容不发送到服务器，也不保存在浏览器长期存储中。Cloudflare 托管页面，会像其他网站一样处理正常访问的网络信息。HEIC 解码组件按需从本站下载。</p></details>
       </section>
       <section class="section more-tools">

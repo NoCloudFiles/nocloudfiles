@@ -264,3 +264,48 @@ test("package-source.py includes DESIGN.md and every top-level tool directory fr
     assert.match(py, new RegExp(`['"]${dir}['"]`), `package-source.py is missing directory ${dir}`);
   }
 });
+
+// Layout: one content width per page (DESIGN.md "Widths").
+test("single-column tools use the narrow column; two-column tools and home use the full one", () => {
+  for (const [p, s] of Object.entries(html)) {
+    const singleColumn = /class="(import-layout|privacy-layout)\b/.test(s);
+    const narrow = /<main class="column-narrow">/.test(s);
+    assert.equal(narrow, singleColumn, `${p}: <main class="column-narrow"> iff the workspace is one column`);
+  }
+  assert.match(css, /main > :not\(\.intro\)\s*{\s*max-width: var\(--column\);/);
+  for (const block of [".brief", ".more-tools", ".privacy-layout", ".import-layout"]) {
+    const rule = css.match(new RegExp(`\\n${block.replace(".", "\\.")} {([^}]*)}`));
+    assert.ok(!rule || !/max-width/.test(rule[1]), `${block} must not set its own max-width`);
+  }
+});
+
+// Copy: plain wording rules (DESIGN.md "Writing").
+const visibleText = (s) =>
+  s
+    .replace(/<head>[\s\S]*?<\/head>/, "")
+    .replace(/<script[\s\S]*?<\/script>/g, "")
+    .replace(/<svg[\s\S]*?<\/svg>/g, "");
+const copyPages = { ...html, "public/about.html": readFileSync("public/about.html", "utf8"), "public/about-en.html": readFileSync("public/about-en.html", "utf8") };
+
+test("visible copy avoids dashes as clause breaks, binary units and defensive 'silently' wording", () => {
+  for (const [p, s] of Object.entries(copyPages)) {
+    const text = visibleText(s);
+    assert.doesNotMatch(text, /—/, `${p}: use a comma or a new sentence instead of a dash`);
+    assert.doesNotMatch(text, /\bMiB\b/, `${p}: show limits in MB`);
+    assert.doesNotMatch(text, /silently|悄悄|偷偷/, `${p}: state what happens instead`);
+  }
+});
+
+test("the privacy promise appears once per tool page, in the brief, not again inside a step", () => {
+  for (const [p, s] of Object.entries(html)) {
+    assert.doesNotMatch(s, /class="local-note"><svg/, `${p}: drop the in-step privacy box; the brief says it`);
+  }
+});
+
+test("every sample button uses one label per language", () => {
+  for (const [p, s] of Object.entries(html)) {
+    const zh = p.startsWith("zh/");
+    for (const m of s.matchAll(/<button[^>]*id="(?:sample|example|csv-example|diff-sample)"[^>]*>([^<]+)</g))
+      assert.equal(m[1], zh ? "试用示例" : "Try a sample", p);
+  }
+});

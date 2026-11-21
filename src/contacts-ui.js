@@ -58,7 +58,7 @@ function selected() {
     group.append(element("legend", card.name));
     if (card.nameParts) {
       const details = card.nameParts.filter(Boolean).join(" · ");
-      const label = tr("原始结构化姓名", "Original structured name") + " · " + details;
+      const label = tr("姓名分项", "Name parts") + " · " + details;
       group.append(
         tick(label, set.has("N"), (on) => {
           if (on) set.add("N");
@@ -156,8 +156,8 @@ async function open(file, kind) {
     get("file").value = "";
     drop.refresh();
     get("status").textContent = tr(
-      "无法完整读取。请使用 30 MiB 以内的 vCard 2.1、3.0 或 4.0 文件，检查编码和卡片边界。",
-      "Could not read the complete backup. Check its encoding and card boundaries; use vCard 2.1, 3.0 or 4.0 up to 30 MiB.",
+      "无法完整读取。请使用 30 MB 以内的 vCard 2.1、3.0 或 4.0 文件，检查编码和卡片边界。",
+      "Could not read the complete backup. Check its encoding and card boundaries; use vCard 2.1, 3.0 or 4.0 up to 30 MB.",
     );
     get("status").dataset.state = "error";
     report("generate_error", source, "input_rejected");

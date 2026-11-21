@@ -23,11 +23,11 @@
       <section class="intro">
         <p class="eyebrow">CSV · Compare before you import</p>
         <h1>Compare two CSV files by key column</h1>
-        <p class="lead">Check an edited price list, inventory sheet, payroll export or financial table against the original before importing. Spot accidentally blanked-out cells, dropped columns, row changes and exact numeric total shifts. Your files stay in this browser.</p>
+        <p class="lead">Before you re-import an edited table, compare it with the original row by row. See which cells were wiped, which columns went missing and which rows changed.</p>
       </section>
       <dl class="brief">
         <div><dt>You need</dt><dd>Two CSV or TSV tables (original and updated), up to 2 MB each, with 1 or 2 unique key columns</dd></div>
-        <div><dt>You get</dt><dd>Row and cell diff counts, wiped-cell and column warnings, optional exact decimal totals, and a diff CSV</dd></div>
+        <div><dt>You get</dt><dd>Counts of changed rows and cells, warnings for wiped cells and missing columns, optional column totals, and a CSV listing every change</dd></div>
         <div><dt>Where files go</dt><dd>Processed in this browser only. Nothing is uploaded; closing the page clears it.</dd></div>
       </dl>
       <div class="stack">
@@ -152,7 +152,7 @@
         <ul class="metrics" id="diff-metrics"></ul>
         <div id="diff-warnings"></div>
         <div id="diff-numeric-box" hidden>
-          <h3>Numeric total audit</h3>
+          <h3>Column totals</h3>
           <dl class="field-list" id="diff-numeric-fields"></dl>
         </div>
         <ul class="issues" id="diff-columns-summary"></ul>
@@ -174,15 +174,15 @@
             <ul>
               <li>Matches rows strictly by the 1 or 2 key columns you select (trimmed exact match).</li>
               <li>Flags cells wiped from non-empty to blank, plus columns dropped from or added to the updated table.</li>
-              <li>Sums an optional numeric column with exact decimal arithmetic and flags full-column sign flips.</li>
+              <li>Optionally adds up one number column in both tables without rounding errors, and warns if every value in it changed sign.</li>
               <li>Exports a UTF-8 with BOM diff CSV after an explicit choice if formula-like cells appear.</li>
             </ul>
           </div>
           <div class="scope-not">
             <h3>Does not</h3>
             <ul>
-              <li>Guess row matches when keys are blank or duplicated — duplicates and blank keys stop the check with exact record numbers.</li>
-              <li>Coerce currency symbols, thousand-separated numbers, scientific notation or text to 0; unparseable cells are counted separately.</li>
+              <li>Guess which rows match when a key is blank or duplicated. The check stops and lists the record numbers.</li>
+              <li>Treat currency symbols, thousands separators, scientific notation or text as 0. Cells it cannot read as numbers are counted separately.</li>
               <li>Repair broken quotes or inconsistent column counts in either input table.</li>
               <li>Validate Shopify, ERP, payroll or accounting business rules or guarantee import acceptance.</li>
             </ul>

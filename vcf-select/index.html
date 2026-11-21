@@ -19,11 +19,11 @@
       <span class="header-note">Free · No sign-up</span>
       <a class="language-switch" href="/zh/vcf-select/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
     </header>
-    <main>
+    <main class="column-narrow">
       <section class="intro">
         <p class="eyebrow">Contacts · Share only what is needed</p>
         <h1>Open a VCF file and export selected contacts</h1>
-        <p class="lead">Open a .vcf or .vcard backup in your browser without importing it into your address book. Choose the contacts and fields you want, then download a new VCF. Your file stays on your device.</p>
+        <p class="lead">Open a .vcf or .vcard backup in your browser without importing it into your address book. Choose the contacts and fields you want, then download a new VCF.</p>
       </section>
       <dl class="brief">
         <div><dt>You need</dt><dd>A contacts backup (.vcf file). <a href="#howto">No file yet? How to export</a></dd></div>
@@ -35,10 +35,10 @@
           <div class="panel-title"><span class="step">1</span><h2>Open a backup</h2></div>
           <div class="dropzone compact" id="file-drop">
             <strong>Drop a VCF file here</strong>
-            <p class="small">.vcf or .vcard · up to 30 MiB</p>
+            <p class="small">.vcf or .vcard · up to 30 MB</p>
             <input class="file-input visually-hidden" type="file" id="file" accept=".vcf,.vcard,text/vcard" />
             <div class="actions">
-              <label class="button primary" for="file">Open a VCF backup (up to 30 MiB)</label>
+              <label class="button primary" for="file">Open a VCF backup (up to 30 MB)</label>
               <button id="sample">Try a sample</button>
             </div>
             <p class="file-status" id="file-status"></p>
@@ -52,7 +52,6 @@
               <li>Computer: select all contacts on iCloud.com or Google Contacts on the web, then export a vCard.</li>
             </ol>
           </details>
-          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>Contacts stay on your device</strong><p>The backup is read in this browser and is not imported into your address book. Closing the page clears your work.</p></div></div>
         </section>
         <section class="panel" id="choose" hidden>
           <div class="panel-title"><span class="step">2</span><h2>Choose people</h2></div>
@@ -65,7 +64,7 @@
           <button class="text-button" id="more">Show more</button>
           <hr class="divider" />
           <div class="panel-title"><span class="step">3</span><h2>Choose details to include</h2></div>
-          <p class="small">Each selected contact’s display name is included. Select the original structured name to share its separate name parts. Tick each additional value to share. Photos and private extension fields are dropped.</p>
+          <p class="small">Each selected contact’s display name is included. To share first and last name as separate fields, tick “Name parts”. Tick each additional value to share. Photos and private extension fields are dropped.</p>
           <div class="actions" id="field-actions" hidden>
             <button type="button" id="select-phones">Select all phones</button>
             <button type="button" id="clear-fields">Clear all fields</button>

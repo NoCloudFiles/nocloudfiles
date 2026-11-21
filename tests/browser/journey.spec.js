@@ -6,7 +6,7 @@ import path from 'node:path';
 test('example photos become a real downloadable PDF within the chosen limit; edits invalidate output',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/zh/photos-to-pdf/');
- await page.getByRole('button',{name:'用示例试一试'}).click();
+ await page.getByRole('button',{name:'试用示例'}).click();
  await expect(page.getByText('共 3 页', {exact:true})).toBeVisible();
  await page.getByLabel('第 2 页前移').click();
  await page.getByLabel('第 1 页旋转').click();
@@ -26,7 +26,7 @@ test('example photos become a real downloadable PDF within the chosen limit; edi
  await page.screenshot({path:'test-results/desktop.png',fullPage:true});
 });
 test('bad file is rejected without discarding already selected photos',async({page})=>{
- await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'用示例试一试'}).click();
+ await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'试用示例'}).click();
  await expect(page.getByText('共 3 页',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'选择照片',exact:true})).toBeEnabled();
  await page.getByLabel('选择照片').setInputFiles({name:'伪装.jpg',mimeType:'image/jpeg',buffer:Buffer.from('<script>bad</script>')});
@@ -35,7 +35,7 @@ test('bad file is rejected without discarding already selected photos',async({pa
 });
 test('mobile layout and crop controls are usable, reset removes the session',async({page})=>{
  await page.setViewportSize({width:390,height:844});await page.goto('/zh/photos-to-pdf/');
- await page.getByRole('button',{name:'用示例试一试'}).click();
+ await page.getByRole('button',{name:'试用示例'}).click();
  await page.getByLabel('第 1 页裁边').click();
  await page.getByLabel('左边裁去').fill('12');
  await page.getByRole('button',{name:'保存裁边'}).click();
@@ -74,14 +74,14 @@ test('real noisy image is compressed to the requested byte limit',async({page})=
  expect(bytes.length).toBeLessThanOrEqual(500000);expect((await PDFDocument.load(bytes)).getPageCount()).toBe(1);
 });
 test('cancellation keeps photos and removes any downloadable partial result',async({page})=>{
- await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'用示例试一试'}).click();await expect(page.getByText('共 3 页',{exact:true})).toBeVisible();
+ await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'试用示例'}).click();await expect(page.getByText('共 3 页',{exact:true})).toBeVisible();
  await holdEncoding(page);await page.getByRole('button',{name:'整理成 PDF'}).click();await page.getByRole('button',{name:'取消处理'}).click();await releaseEncoding(page);
  await expect(page.getByRole('alert')).toContainText('已取消');await expect(page.getByText('共 3 页',{exact:true})).toBeVisible();
  await expect(page.getByRole('link',{name:'下载 PDF'})).toHaveCount(0);await expect(page.getByRole('button',{name:'整理成 PDF'})).toBeEnabled();
 });
 test('processing photos sends no document content to a server',async({page})=>{
  const writes=[];page.on('request',r=>{if(!['GET','HEAD'].includes(r.method()))writes.push(r.url());});
- await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'用示例试一试'}).click();
+ await page.goto('/zh/photos-to-pdf/');await page.getByRole('button',{name:'试用示例'}).click();
  await page.getByRole('button',{name:'整理成 PDF'}).click();
  await expect(page.getByRole('link',{name:'下载 PDF'})).toBeVisible();
  expect(writes).toEqual([]);
