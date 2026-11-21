@@ -10,3 +10,9 @@ header .header-note{margin-left:auto}
 .language-switch svg{flex-shrink:0}
 @media(max-width:600px){header .header-note{display:none}.language-switch{margin-left:auto}}
 @media(max-width:380px){header .brand-mark{display:none}}
+
+.footer-links{align-items:center}
+.footer-links a,.footer-action{display:inline-flex;align-items:center;min-height:36px}
+.footer-action{font:inherit;color:inherit;line-height:inherit;font-weight:inherit;border:0;border-radius:0;padding:0;background:transparent;text-decoration:underline;text-underline-offset:4px}
+.footer-action:hover:not(:disabled){background:transparent;color:#285b45}
+.footer-links a:hover{color:#285b45}
