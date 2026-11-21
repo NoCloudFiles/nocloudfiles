@@ -1,5 +1,5 @@
-const events=new Set(['csv_check_start','csv_checked','csv_ready','tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
-const values={tool_id:['home','photos_to_pdf','csv_check'],input_source:['sample','file','mixed'],interface_language:['en','zh'],error_code:['input_rejected','decode_failed','too_large','generation_failed'],feedback_result:['helped','unclear','too_large','not_accepted','other']};
+const events=new Set(['photo_inspected','photo_ready','csv_check_start','csv_checked','csv_ready','tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
+const values={tool_id:['photo_privacy','home','photos_to_pdf','csv_check'],input_source:['sample','file','mixed'],interface_language:['en','zh'],error_code:['input_rejected','decode_failed','too_large','generation_failed'],feedback_result:['helped','unclear','too_large','not_accepted','other']};
 export function safeEvent(name,params={}){
  if(!events.has(name))return null;
  return Object.fromEntries(Object.entries(params).filter(([k,v])=>values[k]?.includes(v)));

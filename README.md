@@ -64,3 +64,9 @@ Events: `tool_start` (first photos added to an empty session), `photos_added`, `
 Observation: inspect weekly cohorts with `input_source=file`, keep `mixed` separate and exclude `sample`. Compare sessions that reached `generate_start` with sessions that reached `pdf_ready` and `download_click`; do not divide raw event totals or sum repeated attempts as people. Count fixed negative feedback categories and errors to guide fixes. Consent can occur mid-task, no pre-consent events are replayed, and blockers suppress events, so the measured cohort is incomplete and selection-biased. Download clicks do not prove a file was saved or accepted by another website. Actual usefulness remains unproven without real task evidence.
 
 Verification uses synthetic samples and `?analytics_debug=1` for debug tagging. There is no active exclusion filter: debug tagging alone does not guarantee test traffic is absent from ordinary reports. Exclude November 21 launch QA and sample runs when assessing real usage. Automated consent tests mock the GA script/config; their passing results are not server receipt evidence. See `ACCEPTANCE.md` for the separate live receipt check.
+
+## 手机照片隐私检查
+
+英文入口 `/photo-privacy/`，中文入口 `/zh/photo-privacy/`。原件在本地解析；JPEG、HEIC/HEIF（支持的 HEVC 静态主图）最多 32 MB、5000 万像素。预览识别出的原始字段，分享副本按用户选择重新写入 XMP，默认无可选字段。厂商数据和缩略图不复制。部分专用字段只能查看。动态照片输出单张静态 JPEG；配对视频不处理。HDR 副本使用标准亮度，原件保留。画面中可见的地址或人脸仍在画面内。
+
+生产漏斗在 NoCloudFiles GA4 中按 `tool_id=photo_privacy`、语言及观察窗口筛选。依次记录选文件、解析及预览成功、生成且重读副本、点击下载（tool_start / photo_inspected / photo_ready / download_click）。用触发对应阶段的会话数除以开始会话数，另列 input_rejected 和 generation_failed。仅覆盖同意统计的使用者，排除验收时段。文件名、原始字段、选择和替换值都不传入事件。
