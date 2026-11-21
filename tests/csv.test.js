@@ -32,6 +32,50 @@ test("formula-like cells require explicit export choice, preserving or escaping 
     "=1+1",
   );
 });
+test("negative numbers are not flagged or mutated as formulas, while formula payloads still are", () => {
+  const nums = inspectCsv(
+    "id,amount\n1,-12.50\n2, -0.75 \n3,-500\n4,-.5\n5,-100\n6,-1.2e3\n7,-1.5e-3\n",
+  );
+  assert.equal(nums.ok, true);
+  assert.equal(
+    nums.issues.some((x) => x.code === "formula"),
+    false,
+  );
+  const exported = exportCsv(nums);
+  assert.equal(inspectCsv(exported).rows[1][1], "-12.50");
+  assert.equal(inspectCsv(exported).rows[2][1], " -0.75 ");
+  assert.equal(inspectCsv(exported).rows[7][1], "-1.5e-3");
+
+  const mixed = inspectCsv("amount,expr\n-12.50,=1+1\n-100,-SUM(A1)");
+  assert.ok(mixed.issues.some((x) => x.code === "formula"));
+  const escapedRows = inspectCsv(exportCsv(mixed, { formula: "escape" })).rows;
+  assert.equal(escapedRows[1][0], "-12.50");
+  assert.equal(escapedRows[1][1], "'=1+1");
+  assert.equal(escapedRows[2][0], "-100");
+  assert.equal(escapedRows[2][1], "'-SUM(A1)");
+
+  for (const payload of [
+    "=1+1",
+    "+12345",
+    "@SUM(A1)",
+    "-1+1",
+    "-SUM(A1)",
+    "-cmd|' /C calc'!A0",
+    "\t=1",
+    "\r123",
+    "-",
+    "- 5",
+  ]) {
+    const r = inspectCsv(`a,b\n1,"${payload}"`);
+    assert.ok(
+      r.issues.some((x) => x.code === "formula"),
+      `expected formula flag for ${JSON.stringify(payload)}`,
+    );
+    assert.throws(() => exportCsv(r), /formula_choice/);
+    const out = inspectCsv(exportCsv(r, { formula: "escape" })).rows[1][1];
+    assert.equal(out, "'" + payload);
+  }
+});
 test("ambiguous dates and scientific notation are flagged, never guessed", () => {
   const r = inspectCsv("date,id\n03/04/2026,1.23E+11");
   assert.ok(r.issues.some((x) => x.code === "date"));
@@ -54,7 +98,7 @@ test("empty rows and empty cells are retained and output handles quotes correctl
   assert.equal(r.rows.length, 3);
 });
 
-test("auto detection ignores terminal blank record and never silently falls back", () => {
+test("auto detection handles single-column lists and rejects ambiguous delimiters", () => {
   for (const separator of [";", "\t", "|", ","]) {
     const r = inspectCsv(`sku${separator}amount\n00123${separator}1.23\n`);
     assert.equal(r.ok, true);
@@ -64,6 +108,29 @@ test("auto detection ignores terminal blank record and never silently falls back
       ["00123", "1.23"],
     ]);
   }
-  assert.equal(inspectCsv("single\nvalue").ok, false);
+  const oneCol = inspectCsv("email\na@b.com\nc@d.com");
+  assert.equal(oneCol.ok, true);
+  assert.equal(oneCol.delimiter, ",");
+  assert.deepEqual(oneCol.issues, []);
+  assert.deepEqual(oneCol.rows, [["email"], ["a@b.com"], ["c@d.com"]]);
+
+  const quotedOneCol = inspectCsv('name\n"Doe, Jane"\n"Smith, John"');
+  assert.equal(quotedOneCol.ok, true);
+  assert.equal(quotedOneCol.delimiter, ",");
+  assert.deepEqual(quotedOneCol.rows, [["name"], ["Doe, Jane"], ["Smith, John"]]);
+
+  for (const ambiguous of ["a,b\n1;2", "a,b\n1"]) {
+    const r = inspectCsv(ambiguous);
+    assert.equal(r.ok, false);
+    assert.equal(r.issues[0].code, "delimiter");
+  }
+  const lateStrayComma = [
+    "email",
+    ...Array.from({ length: 23 }, (_, i) => `u${i + 1}@example.com`),
+    "u24@example.com,stray",
+  ].join("\n");
+  const ragged = inspectCsv(lateStrayComma);
+  assert.equal(ragged.ok, false);
+  assert.deepEqual(ragged.issues, [{ code: "columns", severity: "error", row: 25 }]);
   assert.equal(inspectCsv("single\nvalue", { delimiter: "," }).ok, true);
 });

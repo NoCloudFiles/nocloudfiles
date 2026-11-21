@@ -31,6 +31,18 @@ test("no page scrolls sideways at phone width, including with results shown", as
       await page.locator("#csv-check").click();
       await expect(page.locator("#csv-download")).toBeVisible();
     }
+    if (path.includes("csv-diff")) {
+      await page.locator("#diff-sample").click();
+      await expect(page.locator("#diff-key1")).not.toHaveValue("");
+      await page.locator("#diff-compare").click();
+      await expect(page.locator("#diff-download")).toBeVisible();
+    }
+    if (path.includes("interleave-pdf")) {
+      await page.locator("#sample").click();
+      await expect(page.locator("#combine")).toBeEnabled();
+      await page.locator("#combine").click();
+      await expect(page.locator("#download")).toBeVisible();
+    }
     if (path.includes("photos-to-pdf")) {
       await page.locator("#example").click();
       await expect(page.locator(".photo")).toHaveCount(3);
@@ -205,6 +217,8 @@ async function dropIsCancelled(page, selector, kind) {
 
 for (const [path, field] of [
   ["/csv-check/", "#csv-input"],
+  ["/csv-diff/", "#before-input"],
+  ["/interleave-pdf/", "#filename"],
   ["/schedule-to-calendar/", "#table"],
   ["/photos-to-pdf/", "#filename"],
 ]) {
@@ -273,7 +287,7 @@ test("other-tools rows record which tool page sent the user", async ({ page }) =
   expect(await toolChoices(page)).toEqual([
     { tool_id: "csv_check", target_tool: "photos_to_pdf", interface_language: "en" },
   ]);
-  await expect(page.locator(".more-tools a.task-row")).toHaveCount(4);
+  await expect(page.locator(".more-tools a.task-row")).toHaveCount(6);
   await expect(page.locator('.more-tools a[href="/csv-check/"]')).toHaveCount(0);
 });
 

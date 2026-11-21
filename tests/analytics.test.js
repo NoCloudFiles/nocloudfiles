@@ -44,6 +44,69 @@ test('page views identify only a bounded tool name',()=>{
 
 test('tool choice carries only a bounded target tool',()=>{
  assert.deepEqual(safeEvent('tool_select',{tool_id:'home',target_tool:'csv_check',href:'/csv-check/?q=secret'}),{tool_id:'home',target_tool:'csv_check'});
+ assert.deepEqual(safeEvent('tool_select',{tool_id:'home',target_tool:'interleave_pdf',href:'/interleave-pdf/?token=secret'}),{tool_id:'home',target_tool:'interleave_pdf'});
+ assert.deepEqual(safeEvent('tool_select',{tool_id:'csv_check',target_tool:'csv_diff',href:'/csv-diff/#private'}),{tool_id:'csv_check',target_tool:'csv_diff'});
  assert.deepEqual(safeEvent('tool_select',{target_tool:'home'}),{});
  assert.deepEqual(safeEvent('tool_select',{target_tool:'secret-tool'}),{});
+});
+
+test('interleave_pdf and csv_diff events allow only bounded metadata and strip private payloads',()=>{
+ assert.deepEqual(
+  safeEvent('interleave_ready',{tool_id:'interleave_pdf',input_source:'file',interface_language:'en',filename:'tax-front.pdf',pages:12,content:'secret'}),
+  {tool_id:'interleave_pdf',input_source:'file',interface_language:'en'}
+ );
+ assert.deepEqual(
+  safeEvent('csv_diff_ready',{tool_id:'csv_diff',input_source:'mixed',interface_language:'zh',filename:'payroll.csv',cell_value:'secret-salary',key:'SKU-001'}),
+  {tool_id:'csv_diff',input_source:'mixed',interface_language:'zh'}
+ );
+ for(const toolId of ['interleave_pdf','csv_diff']){
+  const sent=[];
+  const a=createAnalytics({measurementId:'G-TEST1234',toolId,language:'en',send:(...x)=>sent.push(x)});
+  a.consent(true);
+  const page=sent.find(x=>x[0]==='event'&&x[1]==='page_view')[2];
+  assert.equal(page.tool_id,toolId);
+  const readyEvent=toolId==='interleave_pdf'?'interleave_ready':'csv_diff_ready';
+  assert.equal(a.event(readyEvent,{tool_id:toolId,input_source:'file',filename:'private-file',secret:'nope'}),true);
+  assert.deepEqual(sent.at(-1),['event',readyEvent,{tool_id:toolId,input_source:'file',interface_language:'en'}]);
+  assert.ok(!JSON.stringify(sent).includes('private-file'));
+  assert.ok(!JSON.stringify(sent).includes('nope'));
+ }
+});
+
+test('page_location keeps only allowlisted referral utm_source and utm_medium while stripping private query params and hashes',()=>{
+ const capture=(location,referrer='')=>{
+  const sent=[];
+  const a=createAnalytics({measurementId:'G-TEST1234',toolId:'vcf_select',language:'en',location,referrer,send:(...args)=>sent.push(args)});
+  a.consent(true);
+  const cfg=sent.find(x=>x[0]==='config')[2];
+  const set=sent.find(x=>x[0]==='set')[1];
+  return {sent,cfg,set};
+ };
+
+ const c1=capture('https://nocloudfiles.com/vcf-select/?utm_source=chatgpt.com&secret=alice.vcf#hash','https://chatgpt.com/c/private-thread?utm_source=chatgpt.com');
+ assert.equal(c1.cfg.page_location,'https://nocloudfiles.com/vcf-select/?utm_source=chatgpt.com');
+ assert.equal(c1.set.page_location,'https://nocloudfiles.com/vcf-select/?utm_source=chatgpt.com');
+ assert.equal(c1.cfg.page_referrer,'https://chatgpt.com/');
+ assert.ok(!JSON.stringify(c1.sent).includes('alice.vcf'));
+ assert.ok(!JSON.stringify(c1.sent).includes('private-thread'));
+ assert.ok(!JSON.stringify(c1.sent).includes('#hash'));
+
+ const c2=capture('https://nocloudfiles.com/schedule-to-calendar/?utm_source=Perplexity.ai&utm_medium=referral&utm_content=private_prompt');
+ assert.equal(c2.cfg.page_location,'https://nocloudfiles.com/schedule-to-calendar/?utm_source=perplexity.ai&utm_medium=referral');
+ assert.equal(c2.set.page_location,'https://nocloudfiles.com/schedule-to-calendar/?utm_source=perplexity.ai&utm_medium=referral');
+ assert.ok(!JSON.stringify(c2.sent).includes('private_prompt'));
+
+ const c3=capture('https://nocloudfiles.com/vcf-select/?utm_source=secret_person&utm_medium=private');
+ assert.equal(c3.cfg.page_location,'https://nocloudfiles.com/vcf-select/');
+ assert.equal(c3.set.page_location,'https://nocloudfiles.com/vcf-select/');
+ assert.ok(!JSON.stringify(c3.sent).includes('secret_person'));
+ assert.ok(!JSON.stringify(c3.sent).includes('private'));
+
+ const c4=capture('https://nocloudfiles.com/vcf-select/?utm_source=chatgpt.com&utm_medium=secret_campaign');
+ assert.equal(c4.cfg.page_location,'https://nocloudfiles.com/vcf-select/?utm_source=chatgpt.com');
+ assert.ok(!JSON.stringify(c4.sent).includes('secret_campaign'));
+
+ const c5=capture('https://nocloudfiles.com/vcf-select/?utm_medium=referral&file=contacts.vcf');
+ assert.equal(c5.cfg.page_location,'https://nocloudfiles.com/vcf-select/');
+ assert.ok(!JSON.stringify(c5.sent).includes('contacts.vcf'));
 });

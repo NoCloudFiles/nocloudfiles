@@ -116,7 +116,16 @@ async function readFile(file) {
   originalText = null;
   $("csv-input").value = "";
   const current = readVersion;
+  if (!file.size) {
+    $("csv-file").value = "";
+    dropzone.refresh();
+    error(messages.empty);
+    event("generate_error", { error_code: "input_rejected" });
+    return;
+  }
   if (file.size > 2000000) {
+    $("csv-file").value = "";
+    dropzone.refresh();
     error(messages.limit);
     event("generate_error", { error_code: "input_rejected" });
     return;

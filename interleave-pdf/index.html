@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-tool="interleave_pdf">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
+    <title>Mix Front &amp; Back Scans into One PDF — NoCloudFiles</title>
+    <meta name="description" content="Interleave front (odd) and back (even) PDF scans from a single-sided scanner into reading order in your browser. Reverse back stack, optional 180° flip, lossless quality, no uploads." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="canonical" href="https://nocloudfiles.com/interleave-pdf/" />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/interleave-pdf/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/interleave-pdf/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/interleave-pdf/" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
+      <span class="header-note">Free · No sign-up</span>
+      <a class="language-switch" href="/zh/interleave-pdf/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">PDF scans · Front &amp; back</p>
+        <h1>Mix front &amp; back scans into one PDF</h1>
+        <p class="lead">Interleave two single-sided scan PDFs into reading order—reversing the back stack if needed—without re-compressing pages or uploading files.</p>
+      </section>
+      <dl class="brief">
+        <div><dt>You need</dt><dd>Two PDFs from a single-sided scanner (front pages and back pages), up to 50 MB each</dd></div>
+        <div><dt>You get</dt><dd>One interleaved PDF in reading order, keeping original page quality and text</dd></div>
+        <div><dt>Where files go</dt><dd>Processed in this browser only. Nothing is uploaded; closing the page clears it.</dd></div>
+      </dl>
+      <div class="stack">
+        <div class="workspace">
+          <section class="panel">
+            <div class="panel-title"><span class="step">1</span><h2>Add front &amp; back scan PDFs</h2></div>
+            <div class="stack">
+              <div class="dropzone compact" id="front-drop">
+                <strong>Front pages (odd: 1, 3, 5…)</strong>
+                <p class="small">PDF file · up to 50 MB</p>
+                <input class="file-input visually-hidden" id="front-file" type="file" accept=".pdf,application/pdf" />
+                <div class="actions"><label class="button" for="front-file">Choose front PDF</label></div>
+                <p class="file-status" id="front-status" aria-live="polite"></p>
+              </div>
+              <div class="dropzone compact" id="back-drop">
+                <strong>Back pages (even: 2, 4, 6… or reversed)</strong>
+                <p class="small">PDF file · up to 50 MB</p>
+                <input class="file-input visually-hidden" id="back-file" type="file" accept=".pdf,application/pdf" />
+                <div class="actions"><label class="button" for="back-file">Choose back PDF</label></div>
+                <p class="file-status" id="back-status" aria-live="polite"></p>
+              </div>
+              <div class="actions">
+                <button id="sample">Try a sample</button>
+                <button id="clear">Clear</button>
+              </div>
+            </div>
+            <div class="notice error" id="error" role="alert" hidden></div>
+            <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>Your scans stay on your device</strong><p>Up to 50 MB per file, 80 MB and 500 pages combined. Originals stay unchanged; closing the page clears your work.</p></div></div>
+          </section>
+          <aside class="panel side">
+            <div class="panel-title"><span class="step">2</span><h2>Set page order</h2></div>
+            <div class="field">
+              <label for="back-order">Back-side scan order</label>
+              <select id="back-order">
+                <option value="reverse" selected>Reverse order (last page scanned first)</option>
+                <option value="normal">Same order (first page scanned first)</option>
+              </select>
+              <p class="small">Most single-sided feeders scan the back stack in reverse when you flip the pile.</p>
+            </div>
+            <div class="field">
+              <label for="rotate-back">Back-side orientation</label>
+              <select id="rotate-back">
+                <option value="0" selected>Keep original orientation</option>
+                <option value="180">Rotate back pages 180° (fed upside-down)</option>
+              </select>
+              <p class="small">Use only if the flipped stack went through the feeder upside-down.</p>
+            </div>
+            <div class="field">
+              <label for="filename">Download filename</label>
+              <input id="filename" type="text" maxlength="60" value="combined-scan" autocomplete="off" />
+              <p class="small">Saved as a .pdf file</p>
+            </div>
+            <button class="primary" id="combine" disabled>Combine front &amp; back</button>
+            <hr />
+            <ul class="micro-list">
+              <li>Copies pages directly without re-compression</li>
+              <li>Preserves text layers and existing rotation</li>
+              <li>Appends extra pages instead of dropping them</li>
+            </ul>
+          </aside>
+        </div>
+        <section class="panel" id="plan-panel" hidden aria-live="polite">
+          <div class="panel-title"><span class="step">3</span><h2>Page pairing preview</h2></div>
+          <ul class="metrics" id="plan-metrics"></ul>
+          <div class="notice" id="plan-warning" hidden></div>
+          <p class="small" id="plan-note"></p>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Page pairing preview">
+            <table class="data-table has-header"><tbody id="plan-table"></tbody></table>
+          </div>
+        </section>
+        <section class="panel result" id="result" hidden aria-live="polite">
+          <div class="result-top">
+            <div class="panel-title"><span class="step">4</span><div><h2 id="result-title"></h2><p class="file-stats" id="result-stats"></p></div></div>
+            <a class="button download" id="download">Download PDF</a>
+          </div>
+          <div class="actions result-actions">
+            <button id="preview">Preview PDF</button>
+          </div>
+          <p class="small">Check the first and last pages to confirm reading order and upright orientation before sharing or archiving.</p>
+          <iframe class="result-preview" id="pdf-preview" title="Combined PDF preview" hidden></iframe>
+        </section>
+      </div>
+      <section class="section scope">
+        <h2>What this tool can and cannot do</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>What it does</h3>
+            <ul>
+            <li>Interleaves front (odd) and back (even) PDF scans into one PDF in reading order.</li>
+            <li>Reverses the back file by default, or keeps it in forward order when needed.</li>
+            <li>Optionally rotates all back pages by 180° while keeping each page's existing rotation.</li>
+            <li>Copies original pages losslessly without rasterizing or re-compressing scans.</li>
+            <li>Flags page-count mismatches and appends trailing pages so no page is silently dropped.</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>What it does not do</h3>
+            <ul>
+            <li>Unlock or read password-protected or encrypted PDFs.</li>
+            <li>Run OCR, deskew crooked scans, crop margins or edit page content.</li>
+            <li>Automatically detect upside-down pages or remove blank back sides.</li>
+            <li>Repair damaged PDFs or split a single mixed PDF into front and back halves.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="section more-tools">
+        <h2>Other tools</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>Photos</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">A website limits your upload size</span><span class="task-get">Combine photos into one PDF that fits the limit</span><span class="task-meta">Photos to PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/photo-privacy/" data-tool="photo_privacy"><span class="task-need">You are about to share a phone photo</span><span class="task-get">See and remove its location, capture time and device details</span><span class="task-meta">Photo privacy check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>A table or CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/csv-check/" data-tool="csv_check"><span class="task-need">A spreadsheet import keeps failing</span><span class="task-get">Find quoting, column and encoding problems, then export a clean CSV</span><span class="task-meta">CSV check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/csv-diff/" data-tool="csv_diff"><span class="task-need">You edited a spreadsheet before re-importing</span><span class="task-get">Compare old and new CSVs by key, catch wiped fields and check totals</span><span class="task-meta">Compare two CSVs</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">You received a shift list or timetable</span><span class="task-get">Check each date, then add everything to your calendar</span><span class="task-meta">Schedule to calendar</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>A contacts backup</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/vcf-select/" data-tool="vcf_select"><span class="task-need">You want to send a few contacts, not the whole address book</span><span class="task-get">Pick the people and details to share from a VCF file</span><span class="task-meta">Select contacts</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>NoCloudFiles · Your content stays on your device</span>
+      <nav class="footer-links" aria-label="Site">
+        <a href="/about-en.html">Privacy and about</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
+        <a href="/third-party-notices.txt">Open-source notices</a>
+      </nav>
+    </footer>
+    <noscript><p class="notice">This tool needs JavaScript. Please enable it and reopen this page.</p></noscript>
+    <script type="module" src="/src/interleave-ui.js"></script>
+  </body>
+</html>

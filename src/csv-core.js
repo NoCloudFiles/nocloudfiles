@@ -1,5 +1,30 @@
 import Papa from "papaparse";
-const formulaPattern = /^[\s]*[=+@-]|^[\t\r]/;
+export const formulaPattern =
+  /^(?:[\s]*[=+@]|[\s]*-(?!(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?\s*$)|[\t\r])/i;
+function hasUnquotedDelimiter(text, maxLines = 20) {
+  let inQuotes = false,
+    lines = 0,
+    hasContent = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      inQuotes = !inQuotes;
+      hasContent = true;
+    } else if (!inQuotes && (ch === "\n" || ch === "\r")) {
+      if (ch === "\r" && text[i + 1] === "\n") i++;
+      if (hasContent && ++lines >= maxLines) return false;
+      hasContent = false;
+    } else if (
+      !inQuotes &&
+      (ch === "," || ch === ";" || ch === "\t" || ch === "|")
+    ) {
+      return true;
+    } else if (ch !== " " && ch !== "\t") {
+      hasContent = true;
+    }
+  }
+  return false;
+}
 export function decodeCsv(bytes, encoding = "auto") {
   if (encoding === "auto")
     encoding =
@@ -36,17 +61,21 @@ export function inspectCsv(
   if (text.length > maxChars) return fail("limit");
   if (text.includes("\0")) return fail("binary");
   if (!["", ",", ";", "\t", "|"].includes(delimiter)) return fail("delimiter");
+  const clean = text.replace(/^\uFEFF/, "");
   if (!delimiter) {
-    const guessed = Papa.parse(text, {
+    const guessed = Papa.parse(clean, {
       delimitersToGuess: [",", ";", "\t", "|"],
       skipEmptyLines: true,
       preview: 20,
     });
-    if (guessed.errors.some((e) => e.code === "UndetectableDelimiter"))
-      return fail("delimiter");
-    delimiter = guessed.meta.delimiter;
+    if (guessed.errors.some((e) => e.code === "UndetectableDelimiter")) {
+      if (hasUnquotedDelimiter(clean)) return fail("delimiter");
+      delimiter = ",";
+    } else {
+      delimiter = guessed.meta.delimiter;
+    }
   }
-  const parsed = Papa.parse(text.replace(/^\uFEFF/, ""), {
+  const parsed = Papa.parse(clean, {
     delimiter,
     delimitersToGuess: [",", ";", "\t", "|"],
     dynamicTyping: false,

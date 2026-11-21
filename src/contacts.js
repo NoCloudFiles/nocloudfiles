@@ -22,6 +22,17 @@ const optional = new Set([
   "ADR",
   "BDAY",
 ]);
+const SAFE_TYPES = new Set([
+  "CELL",
+  "WORK",
+  "HOME",
+  "FAX",
+  "MAIN",
+  "VOICE",
+  "PAGER",
+  "IPHONE",
+  "OTHER",
+]);
 function decode(value, charset, qp) {
   const bytes = [];
   for (let i = 0; i < value.length; i++) {
@@ -39,6 +50,63 @@ function decode(value, charset, qp) {
   } catch {
     throw Error("encoding");
   }
+}
+function decodeBase64(value, charset) {
+  const clean = value.replace(/\s+/g, "");
+  if (
+    clean.length % 4 !== 0 ||
+    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(
+      clean,
+    )
+  )
+    throw Error("encoding");
+  let bin;
+  try {
+    bin = atob(clean);
+  } catch {
+    throw Error("encoding");
+  }
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  try {
+    return new TextDecoder(charset || "utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    throw Error("encoding");
+  }
+}
+function extractTypes(header) {
+  const params = [];
+  let part = "",
+    inQuotes = false;
+  for (const ch of header) {
+    if (ch === '"') {
+      inQuotes = !inQuotes;
+      part += ch;
+    } else if (ch === ";" && !inQuotes) {
+      params.push(part);
+      part = "";
+    } else part += ch;
+  }
+  params.push(part);
+  const found = [];
+  for (const seg of params.slice(1)) {
+    const eq = seg.indexOf("=");
+    let tokens;
+    if (eq >= 0) {
+      if (seg.slice(0, eq).trim().toUpperCase() !== "TYPE") continue;
+      tokens = seg
+        .slice(eq + 1)
+        .replace(/^"|"$/g, "")
+        .split(",");
+    } else {
+      tokens = [seg.replace(/^"|"$/g, "")];
+    }
+    for (const raw of tokens) {
+      const token = raw.trim().toUpperCase();
+      if (SAFE_TYPES.has(token) && !found.includes(token)) found.push(token);
+    }
+  }
+  return found;
 }
 function parts(value) {
   const components = [""];
@@ -66,30 +134,41 @@ export function parseCards(buffer) {
     current = null;
   function flush() {
     if (!current) return;
-    const { key, charset, qp, values, splitOctets } = current;
+    const { key, charset, qp, base64, types, values, splitOctets } = current;
     current = null;
     if (!readable.has(key)) return;
     let raw;
-    try {
-      raw = decode(values.join(""), charset, qp);
-    } catch (error) {
-      if (!splitOctets.length) throw error;
-      // Some legacy exporters split after the equals introducing an octet.
-      // Recover this variant only when canonical strict decoding failed.
-      const repaired = values.slice();
-      for (const i of splitOctets) repaired[i] = "=" + repaired[i];
-      raw = decode(repaired.join(""), charset, qp);
+    if (base64) {
+      raw = decodeBase64(values.join(""), charset);
+    } else {
+      try {
+        raw = decode(values.join(""), charset, qp);
+      } catch (error) {
+        if (!splitOctets.length) throw error;
+        // Some legacy exporters split after the equals introducing an octet.
+        // Recover this variant only when canonical strict decoding failed.
+        const repaired = values.slice();
+        for (const i of splitOctets) repaired[i] = "=" + repaired[i];
+        raw = decode(repaired.join(""), charset, qp);
+      }
+    }
+    if (key === "N") {
+      const nParts = parts(raw);
+      if (!nParts.some((p) => p.trim())) return;
+      card.nameParts = Array.from({ length: 5 }, (_, i) => nParts[i] ?? "");
+      card.fallback = nParts.filter(Boolean).join(" ").trim();
+      return;
     }
     const value =
-      key === "N" || key === "ADR" || key === "ORG"
+      key === "ADR" || key === "ORG"
         ? parts(raw).filter(Boolean).join(" ")
         : unescape(raw);
     if (!value.trim()) return;
     if (key === "FN") card.name = value.trim();
-    else if (key === "N") card.fallback = value.trim();
     else
       card.fields.push({
         key,
+        ...(types.length ? { types } : {}),
         ...(["ADR", "ORG"].includes(key) ? { components: parts(raw) } : {}),
         value: key === "TEL" ? value.replace(/^tel:/i, "") : value,
       });
@@ -108,14 +187,15 @@ export function parseCards(buffer) {
     start = end + 1 + (bytes[end] === 13 && bytes[end + 1] === 10 ? 1 : 0);
     if (data.length > MAX_FIELD) {
       if (
-        current?.key === "PHOTO" &&
+        current?.binary &&
+        !current.base64 &&
         (data[0] === 32 || data[0] === 9 || !data.subarray(0, 256).includes(58))
       )
         continue;
       const prefix = String.fromCharCode(...data.subarray(0, 256));
       if (card && /^(?:[\w-]+\.)?(PHOTO|LOGO|SOUND|KEY)[;:]/i.test(prefix)) {
         flush();
-        current = { key: "PHOTO", binary: true };
+        current = { key: "PHOTO", binary: true, base64: false };
         continue;
       }
       throw Error("largeField");
@@ -138,12 +218,18 @@ export function parseCards(buffer) {
       append(line.slice(1));
       continue;
     }
-    if (!line) continue;
-    if (current?.binary && !line.includes(":")) continue;
+    if (!line) {
+      if (current?.base64) flush();
+      continue;
+    }
+    if (current?.binary && !line.includes(":")) {
+      if (current.base64) append(line);
+      continue;
+    }
     flush();
     if (/^BEGIN:VCARD$/i.test(line)) {
       if (card) throw Error("invalid");
-      card = { fields: [], name: "", fallback: "", version: "" };
+      card = { fields: [], name: "", fallback: "", nameParts: null, version: "" };
       continue;
     }
     if (!card) throw Error("invalid");
@@ -161,23 +247,26 @@ export function parseCards(buffer) {
     const key = header[1].split(";")[0].split(".").at(-1).toUpperCase(),
       value = line.slice(header[0].length);
     if (key === "VERSION") {
-      card.version = value;
+      card.version = value.trim();
       continue;
     }
     const qp = /(?:^|;)ENCODING="?QUOTED-PRINTABLE"?(?:;|$)/i.test(header[1]);
-    const binary =
-      /;(?:ENCODING=)?"?(?:BASE64|B)"?(?:;|$)/i.test(header[1]) ||
-      key === "PHOTO";
+    const base64 = /;(?:ENCODING=)?"?(?:BASE64|B)"?(?:;|$)/i.test(header[1]);
+    if (qp && base64 && readable.has(key)) throw Error("encoding");
+    const binary = base64 || key === "PHOTO";
+    const types =
+      key === "TEL" || key === "EMAIL" ? extractTypes(header[1]) : [];
     current = {
       key,
       qp: qp && readable.has(key),
+      base64: base64 && readable.has(key),
       binary,
+      types,
       charset: /;CHARSET="?([^";]+)/i.exec(header[1])?.[1],
       length: 0,
       values: [],
       splitOctets: [],
     };
-    if (binary && readable.has(key)) throw Error("encoding");
     append(value);
   }
   if (card || !cards.length) throw Error("invalid");
@@ -185,13 +274,33 @@ export function parseCards(buffer) {
 }
 export function writeCards(selection) {
   const lines = [];
-  for (const { name, fields } of selection) {
+  for (const { name, nameParts, fields } of selection) {
     const n = escapeText(name);
-    lines.push("BEGIN:VCARD", "VERSION:3.0", "FN:" + n, "N:" + n + ";;;;");
-    for (const { key, value, components } of fields) {
+    const structuredN =
+      Array.isArray(nameParts) &&
+      nameParts.some((p) => String(p ?? "").trim())
+        ? Array.from({ length: 5 }, (_, i) =>
+            escapeText(String(nameParts[i] ?? "")),
+          ).join(";")
+        : n + ";;;;";
+    lines.push("BEGIN:VCARD", "VERSION:3.0", "FN:" + n, "N:" + structuredN);
+    for (const { key, value, components, types } of fields) {
       if (!optional.has(key)) throw Error("field");
+      const safeTypes =
+        (key === "TEL" || key === "EMAIL") && Array.isArray(types)
+          ? [
+              ...new Set(
+                types
+                  .map((t) => String(t).toUpperCase())
+                  .filter((t) => SAFE_TYPES.has(t)),
+              ),
+            ]
+          : [];
+      const prop = safeTypes.length
+        ? key + ";TYPE=" + safeTypes.join(",")
+        : key;
       lines.push(
-        key +
+        prop +
           ":" +
           (components && ["ORG", "ADR"].includes(key)
             ? components.map(escapeText).join(";")

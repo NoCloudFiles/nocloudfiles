@@ -1,6 +1,8 @@
-const events=new Set(['tool_select','schedule_ready','contacts_ready','photo_inspected','photo_ready','csv_check_start','csv_checked','csv_ready','tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
-const tools=['schedule_to_calendar','vcf_select','photo_privacy','home','photos_to_pdf','csv_check'];
+const events=new Set(['tool_select','schedule_ready','contacts_ready','photo_inspected','photo_ready','interleave_ready','csv_check_start','csv_checked','csv_ready','csv_diff_ready','tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
+const tools=['schedule_to_calendar','vcf_select','photo_privacy','interleave_pdf','home','photos_to_pdf','csv_check','csv_diff'];
 const values={tool_id:tools,target_tool:tools.filter(t=>t!=='home'),input_source:['sample','file','mixed'],interface_language:['en','zh'],error_code:['input_rejected','decode_failed','too_large','generation_failed'],feedback_result:['helped','unclear','too_large','not_accepted','other']};
+const utmSources=new Set(['chatgpt.com','openai','perplexity','perplexity.ai','claude.ai','anthropic','copilot.microsoft.com','copilot','gemini.google.com','gemini','google','bing','github','alternativeto']);
+const utmMediums=new Set(['referral','organic','ai','social','web']);
 export function safeEvent(name,params={}){
  if(!events.has(name))return null;
  return Object.fromEntries(Object.entries(params).filter(([k,v])=>values[k]?.includes(v)));
@@ -9,7 +11,20 @@ export function createAnalytics({measurementId='',toolId='',language='en',locati
  const valid=/^G-[A-Z0-9]+$/.test(measurementId);let choice=null,initialized=false,pageSent=false;
  const attempt=fn=>{try{return fn();}catch{return undefined;}};
  const command=(...args)=>attempt(()=>send(...args));
- const clean=(url,originOnly=false)=>{try{const u=new URL(url);return /^https?:$/.test(u.protocol)?u.origin+(originOnly?'/':u.pathname):'';}catch{return '';}};
+ const clean=(url,originOnly=false)=>{
+  try{
+   const u=new URL(url);
+   if(!/^https?:$/.test(u.protocol))return '';
+   if(originOnly)return u.origin+'/';
+   const base=u.origin+u.pathname;
+   const src=(u.searchParams.get('utm_source')||'').trim().toLowerCase();
+   if(!utmSources.has(src))return base;
+   const qs=new URLSearchParams({utm_source:src});
+   const med=(u.searchParams.get('utm_medium')||'').trim().toLowerCase();
+   if(utmMediums.has(med))qs.set('utm_medium',med);
+   return `${base}?${qs}`;
+  }catch{return '';}
+ };
  function start(){
   if(!valid)return;attempt(()=>disable(false));
   if(!initialized){

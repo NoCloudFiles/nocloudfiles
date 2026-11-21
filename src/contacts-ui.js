@@ -20,7 +20,22 @@ let cards = [],
 function clearOutput() {
   links.clear();
   get("raw").textContent = "";
+  const note = get("empty-fields-note");
+  note.textContent = "";
+  note.hidden = true;
   get("result").hidden = true;
+}
+function updateFieldActions() {
+  const hasSelection = chosen.size > 0;
+  get("field-actions").hidden = !hasSelection;
+  let hasPhone = false,
+    hasChecked = false;
+  for (const [index, set] of chosen) {
+    if (set.size > 0) hasChecked = true;
+    if (cards[index].fields.some((f) => f.key === "TEL")) hasPhone = true;
+  }
+  get("select-phones").disabled = !hasPhone;
+  get("clear-fields").disabled = !hasChecked;
 }
 function tick(text, checked, change) {
   const label = element("label"),
@@ -36,15 +51,22 @@ function selected() {
   const target = get("fields");
   target.replaceChildren();
   get("build").disabled = !chosen.size;
+  updateFieldActions();
   for (const [index, set] of chosen) {
     const card = cards[index],
       group = element("fieldset");
     group.append(element("legend", card.name));
     for (const [i, f] of card.fields.entries()) {
+      const label =
+        (names[f.key] || f.key) +
+        (f.types?.length ? " (" + f.types.join(", ") + ")" : "") +
+        " · " +
+        f.value;
       group.append(
-        tick((names[f.key] || f.key) + " · " + f.value, set.has(i), (on) => {
+        tick(label, set.has(i), (on) => {
           on ? set.add(i) : set.delete(i);
           clearOutput();
+          updateFieldActions();
         }),
       );
     }
@@ -86,6 +108,17 @@ get("search").oninput = () => {
   renderLimit = 100;
   people();
 };
+get("select-phones").onclick = () => {
+  for (const [index, set] of chosen)
+    cards[index].fields.forEach((f, i) => {
+      if (f.key === "TEL") set.add(i);
+    });
+  selected();
+};
+get("clear-fields").onclick = () => {
+  for (const set of chosen.values()) set.clear();
+  selected();
+};
 async function open(file, kind) {
   const id = ++revision;
   worker?.terminate();
@@ -94,31 +127,36 @@ async function open(file, kind) {
   chosen.clear();
   get("search").value = "";
   get("choose").hidden = true;
+  get("field-actions").hidden = true;
   get("fields").replaceChildren();
   get("people").replaceChildren();
+  delete get("status").dataset.state;
   clearOutput();
   source = kind;
   if (!file) {
     get("status").textContent = "";
     return;
   }
-  report("tool_start", source);
-  get("status").textContent = tr("正在本地读取…", "Reading locally…");
   function fail() {
     if (id !== revision) return;
     worker?.terminate();
     worker = null;
+    get("file").value = "";
+    drop.refresh();
     get("status").textContent = tr(
       "无法完整读取。请使用 30 MiB 以内的 vCard 2.1、3.0 或 4.0 文件，检查编码和卡片边界。",
       "Could not read the complete backup. Check its encoding and card boundaries; use vCard 2.1, 3.0 or 4.0 up to 30 MiB.",
     );
+    get("status").dataset.state = "error";
     report("generate_error", source, "input_rejected");
   }
+  if (!file.size || file.size > 30 * 1024 * 1024) {
+    fail();
+    return;
+  }
+  report("tool_start", source);
+  get("status").textContent = tr("正在本地读取…", "Reading locally…");
   try {
-    if (!file.size || file.size > 30 * 1024 * 1024) {
-      fail();
-      return;
-    }
     const bytes = await file.arrayBuffer();
     if (id !== revision) return;
     worker = new Worker(new URL("./contacts-worker.js", import.meta.url), {
@@ -136,6 +174,7 @@ async function open(file, kind) {
       cards = data.cards;
       renderLimit = 100;
       get("choose").hidden = false;
+      delete get("status").dataset.state;
       get("status").textContent =
         tr("已读取联系人：", "Contacts read: ") + cards.length;
       people();
@@ -162,9 +201,18 @@ get("build").onclick = () => {
   try {
     const selection = Array.from(chosen, ([index, fields]) => ({
       name: cards[index].name,
+      nameParts: cards[index].nameParts,
       fields: cards[index].fields.filter((_, i) => fields.has(i)),
     }));
     const vcf = writeCards(selection);
+    if (selection.some((c) => c.fields.length === 0)) {
+      const note = get("empty-fields-note");
+      note.textContent = tr(
+        "注意：部分已选联系人未勾选任何附加字段，导出文件中仅包含其姓名。",
+        "Note: Some selected contacts have no details ticked — only their names were included.",
+      );
+      note.hidden = false;
+    }
     get("raw").textContent = vcf;
     get("result").hidden = false;
     links.add(
@@ -180,6 +228,13 @@ get("build").onclick = () => {
       "所选字段无法写入，请检查选择。",
       "Could not export the selected fields.",
     );
+    get("status").dataset.state = "error";
     report("generate_error", source, "generation_failed");
   }
 };
+window.addEventListener("beforeunload", (e) => {
+  if (cards.length > 0) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});

@@ -49,7 +49,9 @@ function invalidate() {
   links.clear();
   preview.replaceChildren();
   status.textContent = "";
+  delete status.dataset.state;
   get("guide").hidden = true;
+  get("schedule-result").hidden = true;
 }
 function reset() {
   invalidate();
@@ -59,6 +61,7 @@ function reset() {
 }
 function error(text) {
   status.textContent = text;
+  status.dataset.state = "error";
   report("generate_error", source, "input_rejected");
 }
 input.oninput = () => {
@@ -89,13 +92,16 @@ get("file").onchange = async (e) => {
     const content = decodeCsv(new Uint8Array(await file.arrayBuffer()));
     if (id === loadId) input.value = content;
   } catch {
-    if (id === loadId)
+    if (id === loadId) {
+      get("file").value = "";
+      drop.refresh();
       error(
         tr(
           "请选择 2 MB 以内的 UTF-8 或 UTF-16 CSV/TSV。",
           "Choose a UTF-8 or UTF-16 CSV/TSV up to 2 MB.",
         ),
       );
+    }
   }
 };
 get("map").onclick = () => {
@@ -180,6 +186,7 @@ get("review").onclick = () => {
       source,
     );
     get("guide").hidden = false;
+    get("schedule-result").hidden = false;
     report("schedule_ready", source);
   } catch (e) {
     const [a, b] = e.message.split("|");
@@ -193,3 +200,9 @@ get("review").onclick = () => {
     );
   }
 };
+window.addEventListener("beforeunload", (e) => {
+  if (input.value) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});

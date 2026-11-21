@@ -5,7 +5,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { formatBytes } from "../src/core.js";
 import { describeSelection } from "../src/dropzone.js";
 
-import { buildPages } from "./pages.js";
+import { buildPages, buildRoutes } from "./pages.js";
 
 // Every page Vite builds and deploys is checked; a new tool cannot skip these rules.
 const pages = buildPages();
@@ -157,7 +157,7 @@ test("a scope section, when a tool has one, fills both sides", () => {
 });
 
 test("the page list comes from the build entries and covers both languages", () => {
-  assert.ok(pages.length >= 12, `only ${pages.length} pages found`);
+  assert.ok(pages.length >= 16, `only ${pages.length} pages found`);
   for (const p of pages.filter((x) => !x.startsWith("zh/")))
     assert.ok(pages.includes("zh/" + p), `${p} has no Chinese build entry`);
 });
@@ -181,7 +181,20 @@ test("styles load from <head>, never injected by scripts (avoids an unstyled fir
     const head = s.slice(0, s.indexOf("</head>"));
     assert.match(head, /<link rel="stylesheet" href="\/src\/style.css" \/>/, p);
   }
-  for (const f of ["site.js", "csv-ui.js", "main.js", "privacy-ui.js", "analytics-ui.js", "dropzone.js"])
+  for (const f of [
+    "site.js",
+    "csv-ui.js",
+    "csv-diff-ui.js",
+    "main.js",
+    "privacy-ui.js",
+    "interleave-ui.js",
+    "schedule-ui.js",
+    "contacts-ui.js",
+    "import-tools.js",
+    "page-ui.js",
+    "analytics-ui.js",
+    "dropzone.js",
+  ])
     assert.doesNotMatch(readFileSync("src/" + f, "utf8"), /import\s+["'][^"']+\.css["']/, f);
 });
 
@@ -234,4 +247,20 @@ test("in-page links point at existing help", () => {
   for (const [p, s] of Object.entries(html))
     for (const m of s.matchAll(/href="#([^"]+)"/g))
       assert.match(s, new RegExp(`id="${m[1]}"`), `${p} links to missing #${m[1]}`);
+});
+
+test("sitemap.xml matches buildRoutes() 1-to-1", () => {
+  const xml = readFileSync("public/sitemap.xml", "utf8");
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).sort();
+  const expected = buildRoutes().map((r) => "https://nocloudfiles.com" + r).sort();
+  assert.deepEqual(locs, expected);
+});
+
+test("package-source.py includes DESIGN.md and every top-level tool directory from vite.config.js", () => {
+  const py = readFileSync("scripts/package-source.py", "utf8");
+  assert.match(py, /['"]DESIGN\.md['"]/);
+  const topDirs = [...new Set(pages.map((p) => p.split("/")[0]).filter((d) => d !== "index.html"))];
+  for (const dir of topDirs) {
+    assert.match(py, new RegExp(`['"]${dir}['"]`), `package-source.py is missing directory ${dir}`);
+  }
 });

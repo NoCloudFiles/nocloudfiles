@@ -1,16 +1,20 @@
 import Papa from "papaparse";
 import { escapeText, foldLine } from "./local-formats.js";
+import { formulaPattern } from "./csv-core.js";
 function day(text, order) {
   let y, m, d;
-  const iso = /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.exec(text);
-  if (iso) [, y, m, d] = iso.map(Number);
-  else {
-    const local = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text);
+  const iso = /^(\d{4})([-/.])(\d{1,2})\2(\d{1,2})$/.exec(text);
+  if (iso) {
+    y = +iso[1];
+    m = +iso[3];
+    d = +iso[4];
+  } else {
+    const local = /^(\d{1,2})([/-])(\d{1,2})\2(\d{4})$/.exec(text);
     if (!local) throw Error("date");
-    if (!order) throw Error("order");
-    y = +local[3];
-    m = +local[order === "mdy" ? 1 : 2];
-    d = +local[order === "mdy" ? 2 : 1];
+    if (order !== "mdy" && order !== "dmy") throw Error("order");
+    y = +local[4];
+    m = +(order === "mdy" ? local[1] : local[3]);
+    d = +(order === "mdy" ? local[3] : local[1]);
   }
   const date = new Date(Date.UTC(y, m - 1, d));
   if (
@@ -29,9 +33,27 @@ function next(date) {
   return n.toISOString().slice(0, 10);
 }
 function clock(t) {
-  const m = /^(\d{1,2}):([0-5]\d)$/.exec(t.trim());
-  if (!m || +m[1] > 23) throw Error("time");
-  return m[1].padStart(2, "0") + ":" + m[2];
+  const m = /^(\d{1,2}):([0-5]\d)(?::([0-5]\d))?(?:\s*([AaPp][Mm]))?$/.exec(
+    t.trim(),
+  );
+  if (!m) throw Error("time");
+  let h = +m[1];
+  const min = m[2],
+    sec = m[3] || "00",
+    meridiem = m[4]?.toUpperCase();
+  if (meridiem) {
+    if (h < 1 || h > 12) throw Error("time");
+    if (meridiem === "AM") h = h === 12 ? 0 : h;
+    else h = h === 12 ? 12 : h + 12;
+  } else if (h > 23) {
+    throw Error("time");
+  }
+  return (
+    String(h).padStart(2, "0") + ":" + min + (sec !== "00" ? ":" + sec : "")
+  );
+}
+function fullTime(t) {
+  return t.length === 5 ? t + ":00" : t;
 }
 export function eventsFrom(rows, cols, order) {
   if (
@@ -60,8 +82,10 @@ export function eventsFrom(rows, cols, order) {
       if (start || end) {
         start = clock(start);
         end = clock(end);
-        if (!cell("endDate") && end < start) endDate = next(startDate);
-        if (endDate + end <= startDate + start) throw Error("end");
+        const startFull = fullTime(start),
+          endFull = fullTime(end);
+        if (!cell("endDate") && endFull < startFull) endDate = next(startDate);
+        if (endDate + endFull <= startDate + startFull) throw Error("end");
       } else if (endDate < startDate) throw Error("end");
       result.push({ title, startDate, endDate, start, end });
     } catch (e) {
@@ -96,7 +120,7 @@ export function writeCalendar(events) {
     ]) {
       lines.push(
         time
-          ? name + ":" + compact(date) + "T" + time.replace(":", "") + "00"
+          ? name + ":" + compact(date) + "T" + fullTime(time).replaceAll(":", "")
           : name +
               ";VALUE=DATE:" +
               compact(name === "DTEND" ? next(date) : date),
@@ -133,6 +157,6 @@ export function googleCsv(events) {
         e.start ? "False" : "True",
       ]),
     ],
-    { newline: "\r\n", escapeFormulae: true },
+    { newline: "\r\n", escapeFormulae: formulaPattern },
   );
 }

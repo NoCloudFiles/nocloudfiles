@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f3ed" />
-    <title>排班表转日历 — NoCloudFiles</title>
-    <meta name="description" content="粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。" />
+    <title>Excel 或 CSV 排班表转手机日历（ICS） — NoCloudFiles</title>
+    <meta name="description" content="从 Excel 粘贴几行或打开 CSV/TSV 排班表、考试安排、赛程表，在浏览器本地逐条核对日期与跨夜班次后，下载手机可导入的 ICS 日历文件或 Google 日历 CSV。" />
     <link rel="icon" href="/favicon.svg" />
     <link rel="stylesheet" href="/src/style.css" />
     <link rel="canonical" href="https://nocloudfiles.com/zh/schedule-to-calendar/" />
@@ -22,8 +22,8 @@
     <main>
       <section class="intro">
         <p class="eyebrow">日历 · 排班与课表</p>
-        <h1>排班表转日历</h1>
-        <p class="lead">粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。</p>
+        <h1>把 Excel 或 CSV 排班表转成日历文件</h1>
+        <p class="lead">从表格软件复制几行或打开 CSV/TSV 排班、考试、赛程表，在浏览器本地逐条核对日期与跨夜班次后，下载 ICS 日历文件或 Google 日历 CSV。</p>
       </section>
       <dl class="brief">
         <div><dt>需要准备</dt><dd>一张带表头的表格：从表格软件复制，或 CSV/TSV 文件。<a href="#howto">看格式示例</a></dd></div>
@@ -63,9 +63,9 @@
           <div class="panel-title"><span class="step">2</span><h2>对应表格列</h2></div>
           <div class="column-grid" id="columns"></div>
           <div class="field">
-            <label for="order">斜线日期顺序</label>
+            <label for="order">月/日顺序</label>
             <select id="order">
-              <option value="">遇到 03/04/2027 时请选择</option>
+              <option value="">遇到 03/04/2027 或 03-04-2027 时请选择</option>
               <option value="mdy">MM/DD/YYYY</option>
               <option value="dmy">DD/MM/YYYY</option>
             </select>
@@ -74,9 +74,12 @@
           <button class="primary" id="review">预览事件</button>
         </section>
         <p role="status" id="status" class="status"></p>
-        <pre id="preview" class="preview-block"></pre>
-        <aside id="guide" class="local-note" hidden><div><p>建议新建独立的“排班”日历，导入后核对数量和时间。如有误，删除该独立日历即可撤销整批事件。</p><p>iPhone：在 Safari 打开本页，下载并打开 ICS。看到日程列表后，核对顶部数量，点「添加全部」。如果只出现文件预览，可在 Mac 日历导入后通过 iCloud 同步。Android：在电脑打开 Google 日历 → 设置 → 导入和导出，再在手机同步所选日历。</p></div></aside>
-        <div id="links" class="actions"></div>
+        <section class="panel result" id="schedule-result" hidden>
+          <div class="panel-title"><span class="step">3</span><h2>预览并下载</h2></div>
+          <pre id="preview" class="preview-block"></pre>
+          <div id="links" class="actions result-actions"></div>
+          <aside id="guide" class="local-note" hidden><div><p>建议新建独立的“排班”日历，导入后核对数量和时间。如有误，删除该独立日历即可撤销整批事件。</p><p>iPhone：在 Safari 打开本页，下载并打开 ICS。看到日程列表后，核对顶部数量，点「添加全部」。如果只出现文件预览，可在 Mac 日历导入后通过 iCloud 同步。Android：在电脑打开 Google 日历 → 设置 → 导入和导出，再在手机同步所选日历。</p></div></aside>
+        </section>
       </div>
       <section class="section more-tools">
         <h2>其他工具</h2>
@@ -89,9 +92,16 @@
           </ul>
         </div>
         <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>扫描 PDF</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/interleave-pdf/" data-tool="interleave_pdf"><span class="task-need">扫描仪不支持自动双面</span><span class="task-get">把正面、背面两份 PDF 按阅读顺序穿插合并</span><span class="task-meta">双面扫描正反合并</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
           <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
           <ul class="task-list compact">
             <li><a class="task-row" href="/zh/csv-check/" data-tool="csv_check"><span class="task-need">表格导入总是失败或乱码</span><span class="task-get">找出引号、列数和编码问题，导出干净的 CSV</span><span class="task-meta">CSV 检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/zh/csv-diff/" data-tool="csv_diff"><span class="task-need">准备把修改后的表格重新导入系统</span><span class="task-get">按主键对比新旧两份 CSV，揪出被清空字段并核对总和</span><span class="task-meta">表格新旧对比</span><span class="task-go" aria-hidden="true">→</span></a></li>
           </ul>
         </div>
         <div class="task-group">

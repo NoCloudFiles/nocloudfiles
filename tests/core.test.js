@@ -21,6 +21,14 @@ test('sniffs actual content rather than trusting extension or MIME',()=>{
  assert.equal(sniffImage(Uint8Array.from([137,80,78,71,13,10,26,10])),'png');
  assert.equal(sniffImage(new TextEncoder().encode('RIFF0000WEBP')),'webp');
  assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x18ftypheic')),'heic');
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x18ftypheix\0\0\0\0mif1heix')),'heic');
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x18ftypheim\0\0\0\0mif1')),'heic');
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x18ftypmif1\0\0\0\0heicmiaf')),'heic');
+ // AVIF containers include mif1 as a compatible brand and must not be mis-sniffed as HEIC.
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x20ftypavif\0\0\0\0avifmif1miafMA1B')),null);
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x20ftypavis\0\0\0\0avisavifmif1msf1')),null);
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x20ftypmif1\0\0\0\0avifmiafMA1B')),null);
+ assert.equal(sniffImage(new TextEncoder().encode('\0\0\0\x20ftypmif1\0\0\0\0avis')),null);
  assert.equal(sniffImage(new TextEncoder().encode('%PDF-1.7')),null);
  assert.equal(sniffImage(new TextEncoder().encode('<svg onload="alert(1)">')),null);
 });

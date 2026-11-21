@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#f5f3ed" />
-    <title>CSV 检查与整理 — NoCloudFiles</title>
-    <meta name="description" content="本地检查 CSV 引号、列数与编码，保留编号并导出 UTF-8 CSV。" />
+    <title>检查并修复 CSV 编码、引号与列数问题 — NoCloudFiles</title>
+    <meta name="description" content="在浏览器本地检查 CSV/TSV 的乱码编码、损坏引号与错列问题，保留编号前导零并导出标准 UTF-8 CSV 文件，数据不上传。" />
     <link rel="icon" href="/favicon.svg" />
     <link rel="stylesheet" href="/src/style.css" />
     <link rel="canonical" href="https://nocloudfiles.com/zh/csv-check/" />
@@ -135,8 +135,15 @@
           </ul>
         </div>
         <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>扫描 PDF</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/interleave-pdf/" data-tool="interleave_pdf"><span class="task-need">扫描仪不支持自动双面</span><span class="task-get">把正面、背面两份 PDF 按阅读顺序穿插合并</span><span class="task-meta">双面扫描正反合并</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
           <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
           <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/csv-diff/" data-tool="csv_diff"><span class="task-need">准备把修改后的表格重新导入系统</span><span class="task-get">按主键对比新旧两份 CSV，揪出被清空字段并核对总和</span><span class="task-meta">表格新旧对比</span><span class="task-go" aria-hidden="true">→</span></a></li>
             <li><a class="task-row" href="/zh/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">收到一张排班表、考试表或赛程表</span><span class="task-get">逐条核对日期后，一次存进手机日历</span><span class="task-meta">排班表转日历</span><span class="task-go" aria-hidden="true">→</span></a></li>
           </ul>
         </div>

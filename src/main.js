@@ -49,9 +49,11 @@ async function addFiles(files,source='file'){
  finally{setBusy(false);render();$('files').value='';$('progress').hidden=true;$('cancel').hidden=false;}
 }
 $('choose').onclick=()=>$('files').click();$('files').onchange=e=>addFiles([...e.target.files]);
-for(const type of ['dragenter','dragover'])$('drop').addEventListener(type,e=>{e.preventDefault();if(!busy)$('drop').classList.add('dragover');});
-for(const type of ['dragleave','drop'])$('drop').addEventListener(type,e=>{e.preventDefault();$('drop').classList.remove('dragover');});
-$('drop').addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
+let dragDepth=0;
+$('drop').addEventListener('dragenter',e=>{e.preventDefault();dragDepth++;if(!busy)$('drop').classList.add('dragover');});
+$('drop').addEventListener('dragover',e=>{e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect=busy?'none':'copy';if(!busy)$('drop').classList.add('dragover');});
+$('drop').addEventListener('dragleave',e=>{e.preventDefault();dragDepth=Math.max(0,dragDepth-1);if(!dragDepth)$('drop').classList.remove('dragover');});
+$('drop').addEventListener('drop',e=>{e.preventDefault();dragDepth=0;$('drop').classList.remove('dragover');addFiles([...(e.dataTransfer?.files??[])]);});
 // Never let a drop outside the target navigate away and discard the user's session.
 for(const type of ['dragover','drop'])window.addEventListener(type,e=>{if(carriesFiles(e))e.preventDefault();});
 $('example').onclick=async()=>{if(busy)return;setBusy(true);try{const files=await exampleFiles();setBusy(false);await addFiles(files,'sample');}catch(e){error(e.message);setBusy(false);}};

@@ -4,7 +4,7 @@ import zipfile, tarfile
 
 root=Path(__file__).resolve().parents[1]
 public=root/'public'
-notices=['Paper Ready / third-party notices\n\nApplication source: /source.zip (MIT).\n']
+notices=['NoCloudFiles / third-party notices\n\nApplication source: /source.zip (MIT).\n']
 for name in ['pdf-lib','@pdf-lib/standard-fonts','@pdf-lib/upng','pako','tslib','heic-to','papaparse','exifreader','@xmldom/xmldom']:
     folder=root/'node_modules'/name
     license_file=next((folder/n for n in ['LICENSE','LICENSE.md','LICENSE.txt','LICENSE-MIT','LICENSE-MIT.txt'] if (folder/n).exists()),None)
@@ -16,11 +16,11 @@ notices.append('\n\nheic-to 1.4.2: LGPL-3.0-or-later, unmodified npm distributio
 with tarfile.open(public/'heic-to-source.tgz','w:gz') as archive:
     archive.add(root/'node_modules/heic-to',arcname='heic-to-1.4.2')
 with zipfile.ZipFile(public/'source.zip','w',zipfile.ZIP_DEFLATED) as archive:
-    for name in ['src','scripts','tests','public','zh','photos-to-pdf','csv-check','photo-privacy','schedule-to-calendar','vcf-select']:
+    for name in ['src','scripts','tests','public','zh','photos-to-pdf','csv-check','csv-diff','photo-privacy','interleave-pdf','schedule-to-calendar','vcf-select']:
         for p in (root/name).rglob('*'):
             if not p.is_file() or p.name in ['source.zip','heic-to-source.tgz']:
                 continue
             archive.write(p,p.relative_to(root))
-    for name in ['package.json','package-lock.json','playwright.config.js','playwright.live.config.js','vite.config.js','index.html','wrangler.jsonc','README.md','DIRECTION-REVIEW.md','LICENSE','.gitignore']:
+    for name in ['package.json','package-lock.json','playwright.config.js','playwright.live.config.js','vite.config.js','index.html','wrangler.jsonc','README.md','DESIGN.md','DIRECTION-REVIEW.md','ACCEPTANCE.md','LICENSE','.gitignore']:
         archive.write(root/name,name)
 print('Packaged source, dependency distribution and license notices.')

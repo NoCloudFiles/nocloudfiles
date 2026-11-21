@@ -40,7 +40,10 @@ export function sniffImage(bytes) {
   if([137,80,78,71,13,10,26,10].every((b,i)=>bytes[i]===b))return 'png';
   const s=new TextDecoder('latin1').decode(bytes.subarray(0,32));
   if(s.startsWith('RIFF')&&s.slice(8,12)==='WEBP')return 'webp';
-  if(s.slice(4,8)==='ftyp'&&/heic|heix|hevc|hevx|mif1/.test(s.slice(8)))return 'heic';
+  if(s.slice(4,8)==='ftyp'){
+    const brand=s.slice(8,12);
+    if(/^(heic|heix|hevc|hevx|heim|heis|hevm|hevs)$/.test(brand)||(brand==='mif1'&&!/avif|avis/.test(s.slice(16,32))))return 'heic';
+  }
   return null;
 }
 export function fitOnPage(width,height) {

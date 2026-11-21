@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en" data-tool="csv_diff">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
+    <title>Compare Two CSV Files by Key Column — NoCloudFiles</title>
+    <meta name="description" content="Compare an original and edited CSV or TSV file by key column in your browser. Catch accidentally wiped cells, dropped columns, row changes and exact decimal total differences before importing." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="canonical" href="https://nocloudfiles.com/csv-diff/" />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/csv-diff/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/csv-diff/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/csv-diff/" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
+      <span class="header-note">Free · No sign-up</span>
+      <a class="language-switch" href="/zh/csv-diff/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">CSV · Compare before you import</p>
+        <h1>Compare two CSV files by key column</h1>
+        <p class="lead">Check an edited price list, inventory sheet, payroll export or financial table against the original before importing. Spot accidentally blanked-out cells, dropped columns, row changes and exact numeric total shifts. Your files stay in this browser.</p>
+      </section>
+      <dl class="brief">
+        <div><dt>You need</dt><dd>Two CSV or TSV tables (original and updated), up to 2 MB each, with 1 or 2 unique key columns</dd></div>
+        <div><dt>You get</dt><dd>Row and cell diff counts, wiped-cell and column warnings, optional exact decimal totals, and a diff CSV</dd></div>
+        <div><dt>Where files go</dt><dd>Processed in this browser only. Nothing is uploaded; closing the page clears it.</dd></div>
+      </dl>
+      <div class="stack">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>Add original and updated tables</h2></div>
+          <div class="scope-grid">
+            <div>
+              <h3>Original table (Before)</h3>
+              <div class="dropzone compact" id="before-drop">
+                <strong>Drop original CSV here</strong>
+                <p class="small">.csv, .tsv or .txt · up to 2 MB</p>
+                <input class="file-input visually-hidden" id="before-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" />
+                <div class="actions"><label class="button" for="before-file">Choose original file</label></div>
+                <p class="file-status" id="before-file-status" aria-live="polite"></p>
+              </div>
+              <div class="column-grid">
+                <label for="before-encoding">File encoding
+                  <select id="before-encoding">
+                    <option value="auto">UTF-8 / UTF-16 BOM</option>
+                    <option value="utf-8">UTF-8</option>
+                    <option value="utf-16le">UTF-16 LE</option>
+                    <option value="utf-16be">UTF-16 BE</option>
+                    <option value="windows-1252">Windows-1252</option>
+                    <option value="gb18030">GB18030</option>
+                    <option value="big5">Big5</option>
+                  </select>
+                </label>
+                <label for="before-delimiter">Separator
+                  <select id="before-delimiter">
+                    <option value="">Detect from content</option>
+                    <option value=",">Comma</option>
+                    <option value=";">Semicolon</option>
+                    <option value="&#9;">Tab</option>
+                    <option value="|">|</option>
+                  </select>
+                </label>
+              </div>
+              <label class="or-divider" for="before-input">Or paste original table</label>
+              <textarea id="before-input" rows="7" spellcheck="false" autocomplete="off" placeholder="sku,price,image_url&#10;SKU-001,24.50,https://example.com/a.jpg"></textarea>
+            </div>
+            <div>
+              <h3>Updated table (After)</h3>
+              <div class="dropzone compact" id="after-drop">
+                <strong>Drop updated CSV here</strong>
+                <p class="small">.csv, .tsv or .txt · up to 2 MB</p>
+                <input class="file-input visually-hidden" id="after-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" />
+                <div class="actions"><label class="button" for="after-file">Choose updated file</label></div>
+                <p class="file-status" id="after-file-status" aria-live="polite"></p>
+              </div>
+              <div class="column-grid">
+                <label for="after-encoding">File encoding
+                  <select id="after-encoding">
+                    <option value="auto">UTF-8 / UTF-16 BOM</option>
+                    <option value="utf-8">UTF-8</option>
+                    <option value="utf-16le">UTF-16 LE</option>
+                    <option value="utf-16be">UTF-16 BE</option>
+                    <option value="windows-1252">Windows-1252</option>
+                    <option value="gb18030">GB18030</option>
+                    <option value="big5">Big5</option>
+                  </select>
+                </label>
+                <label for="after-delimiter">Separator
+                  <select id="after-delimiter">
+                    <option value="">Detect from content</option>
+                    <option value=",">Comma</option>
+                    <option value=";">Semicolon</option>
+                    <option value="&#9;">Tab</option>
+                    <option value="|">|</option>
+                  </select>
+                </label>
+              </div>
+              <label class="or-divider" for="after-input">Or paste updated table</label>
+              <textarea id="after-input" rows="7" spellcheck="false" autocomplete="off" placeholder="sku,price,image_url&#10;SKU-001,26.00,"></textarea>
+            </div>
+          </div>
+          <div class="actions result-actions">
+            <button id="diff-sample">Try a sample</button>
+            <button id="diff-clear">Clear</button>
+          </div>
+          <p class="small">Up to 2 MB, 20,000 records and 200 columns per table. No autosave. Original files are never overwritten.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title"><span class="step">2</span><h2>Choose matching columns and compare</h2></div>
+          <p class="small" id="diff-columns-status" aria-live="polite">Add both tables above to load shared column headers.</p>
+          <div class="column-grid">
+            <label for="diff-key1">Key column 1
+              <select id="diff-key1">
+                <option value="">Load both tables first</option>
+              </select>
+            </label>
+            <label for="diff-key2">Key column 2 (optional)
+              <select id="diff-key2">
+                <option value="">None</option>
+              </select>
+            </label>
+            <label for="diff-numeric">Numeric column to sum (optional)
+              <select id="diff-numeric">
+                <option value="">None</option>
+              </select>
+            </label>
+            <label for="diff-formula">Formula-like cells in export
+              <select id="diff-formula">
+                <option value="ask">Require a choice if found</option>
+                <option value="escape">Prefix an apostrophe (changes values)</option>
+                <option value="preserve">Preserve exactly (formulas may run)</option>
+              </select>
+            </label>
+          </div>
+          <div class="actions">
+            <button id="diff-load-cols">Load columns</button>
+            <button class="primary" id="diff-compare">Compare tables</button>
+            <button id="diff-cancel" hidden>Cancel</button>
+          </div>
+        </section>
+      </div>
+
+      <p id="diff-error" class="notice error" role="alert" hidden></p>
+
+      <section id="diff-result" class="panel result" hidden aria-live="polite">
+        <div class="panel-title"><span class="step">3</span><h2 id="diff-summary"></h2></div>
+        <ul class="metrics" id="diff-metrics"></ul>
+        <div id="diff-warnings"></div>
+        <div id="diff-numeric-box" hidden>
+          <h3>Numeric total audit</h3>
+          <dl class="field-list" id="diff-numeric-fields"></dl>
+        </div>
+        <ul class="issues" id="diff-columns-summary"></ul>
+        <p class="small" id="diff-preview-note"></p>
+        <div class="table-scroll" id="diff-preview-wrap" tabindex="0" role="region" aria-label="Differences preview">
+          <table class="data-table has-header"><tbody id="diff-preview"></tbody></table>
+        </div>
+        <div class="actions result-actions">
+          <a class="button download" id="diff-download" download="csv-diff-report.csv" hidden>Download diff CSV</a>
+        </div>
+        <p class="small">Output: UTF-8 with BOM, comma separators, CRLF line endings and quoted cells. Columns: <span class="mono">change_type, key, column, before_value, after_value</span>.</p>
+      </section>
+
+      <section class="section scope">
+        <h2>What this comparison does and does not do</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>Checks and reports</h3>
+            <ul>
+              <li>Matches rows strictly by the 1 or 2 key columns you select (trimmed exact match).</li>
+              <li>Flags cells wiped from non-empty to blank, plus columns dropped from or added to the updated table.</li>
+              <li>Sums an optional numeric column with exact decimal arithmetic and flags full-column sign flips.</li>
+              <li>Exports a UTF-8 with BOM diff CSV after an explicit choice if formula-like cells appear.</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>Does not</h3>
+            <ul>
+              <li>Guess row matches when keys are blank or duplicated — duplicates and blank keys stop the check with exact record numbers.</li>
+              <li>Coerce currency symbols, thousand-separated numbers, scientific notation or text to 0; unparseable cells are counted separately.</li>
+              <li>Repair broken quotes or inconsistent column counts in either input table.</li>
+              <li>Validate Shopify, ERP, payroll or accounting business rules or guarantee import acceptance.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section more-tools">
+        <h2>Other tools</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>Photos</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">A website limits your upload size</span><span class="task-get">Combine photos into one PDF that fits the limit</span><span class="task-meta">Photos to PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/photo-privacy/" data-tool="photo_privacy"><span class="task-need">You are about to share a phone photo</span><span class="task-get">See and remove its location, capture time and device details</span><span class="task-meta">Photo privacy check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3h7l5 5v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M14 3v5h5M9 12h6M9 16h6"/></svg>PDF scans</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/interleave-pdf/" data-tool="interleave_pdf"><span class="task-need">Your scanner has no duplex mode</span><span class="task-get">Combine separate front and back PDFs into reading order</span><span class="task-meta">Mix front &amp; back scans</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>A table or CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/csv-check/" data-tool="csv_check"><span class="task-need">A spreadsheet import keeps failing</span><span class="task-get">Find quoting, column and encoding problems, then export a clean CSV</span><span class="task-meta">CSV check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">You received a shift list or timetable</span><span class="task-get">Check each date, then add everything to your calendar</span><span class="task-meta">Schedule to calendar</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>A contacts backup</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/vcf-select/" data-tool="vcf_select"><span class="task-need">You want to send a few contacts, not the whole address book</span><span class="task-get">Pick the people and details to share from a VCF file</span><span class="task-meta">Select contacts</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>NoCloudFiles · Your content stays on your device</span>
+      <nav class="footer-links" aria-label="Site">
+        <a href="/about-en.html">Privacy and about</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
+        <a href="/third-party-notices.txt">Open-source notices</a>
+      </nav>
+    </footer>
+    <noscript><p class="notice">This tool needs JavaScript. Please enable it and reopen this page.</p></noscript>
+    <script type="module" src="/src/csv-diff-ui.js"></script>
+  </body>
+</html>
