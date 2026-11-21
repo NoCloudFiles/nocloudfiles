@@ -3,142 +3,161 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
     <title>CSV 检查与整理 — NoCloudFiles</title>
-    <meta
-      name="description"
-      content="本地检查 CSV 引号、列数与编码，保留编号并导出 UTF-8 CSV。"
-    />
+    <meta name="description" content="本地检查 CSV 引号、列数与编码，保留编号并导出 UTF-8 CSV。" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
     <link rel="canonical" href="https://nocloudfiles.com/zh/csv-check/" />
-    <link
-      rel="alternate"
-      hreflang="en"
-      href="https://nocloudfiles.com/csv-check/"
-    />
-    <link
-      rel="alternate"
-      hreflang="zh-Hans"
-      href="https://nocloudfiles.com/zh/csv-check/"
-    />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/csv-check/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/csv-check/" />
     <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/csv-check/" />
   </head>
   <body>
-    <header>
-  <a class="brand" href="/zh/">NoCloudFiles</a
-      >
-  <span class="header-note">免费 · 无需注册</span>
-  <a class="language-switch" href="/csv-check/" lang="en" hreflang="en"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
-</header>
+    <header class="site-header">
+      <a class="brand" href="/zh/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
+      <span class="header-note">免费 · 无需注册</span>
+      <a class="language-switch" href="/csv-check/" lang="en" hreflang="en"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
+    </header>
     <main>
-      <section class="hero tool-intro">
-        <p>CSV / 导入前先检查</p>
+      <section class="intro">
+        <p class="eyebrow">CSV · 导入前先检查</p>
         <h1>检查并整理 CSV</h1>
-        <p>
-          导入表格前发现格式问题，将可正确读取的 CSV 整理为
-          UTF-8、逗号分隔和一致的引号格式。数据留在本浏览器。
-        </p>
+        <p class="lead">导入表格前发现格式问题，将可正确读取的 CSV 整理为 UTF-8、逗号分隔和一致的引号格式。数据留在本浏览器。</p>
       </section>
+      <dl class="brief">
+        <div><dt>需要准备</dt><dd>一个 CSV、TSV 文件或粘贴的表格文字，最多 2 MB</dd></div>
+        <div><dt>会得到</dt><dd>问题清单；结构无误时，可下载整理好的 UTF-8 CSV</dd></div>
+        <div><dt>文件去向</dt><dd>只在本浏览器中处理，不上传，关闭页面即清空</dd></div>
+      </dl>
       <div class="csv-layout">
         <section class="panel">
-          <h2>1. 添加 CSV</h2>
-          <label for="csv-file">选择 CSV 文件（最多 2 MB）</label
-          ><input
-            id="csv-file"
-            type="file"
-            accept=".csv,.tsv,.txt,text/csv,text/plain"
-          /><label for="csv-input">或粘贴 CSV 文字</label
-          ><textarea
-            id="csv-input"
-            spellcheck="false"
-            autocomplete="off"
-            placeholder="sku;amount&#10;00123;12.50"
-          ></textarea>
-          <div class="actions">
-            <button id="csv-example">使用示例</button
-            ><button id="csv-clear">清空输入</button>
+          <div class="panel-title"><span class="step">1</span><h2>添加 CSV</h2></div>
+          <div class="dropzone compact" id="csv-drop">
+            <strong>把 CSV 文件拖到这里</strong>
+            <p class="small">.csv、.tsv 或 .txt · 最多 2 MB</p>
+            <input class="file-input visually-hidden" id="csv-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" />
+            <div class="actions"><label class="button" for="csv-file">选择 CSV 文件</label></div>
+            <p class="file-status" id="csv-file-status" aria-live="polite"></p>
           </div>
-          <p class="small">
-            最多 20,000 条记录、200 列。不自动保存，不覆盖原文件。
-          </p>
+          <label class="or-divider" for="csv-input">或粘贴 CSV 文字</label>
+          <textarea id="csv-input" spellcheck="false" autocomplete="off" placeholder="sku;amount&#10;00123;12.50"></textarea>
+          <div class="actions">
+            <button id="csv-example">使用示例</button>
+            <button id="csv-clear">清空输入</button>
+          </div>
+          <p class="small">最多 20,000 条记录、200 列。不自动保存，不覆盖原文件。</p>
         </section>
         <aside class="panel">
-          <h2>2. 检查格式</h2>
-          <label for="csv-encoding">文件编码</label
-          ><select id="csv-encoding">
-            <option value="auto">自动：UTF-8 / UTF-16 BOM</option>
-            <option value="utf-8">UTF-8</option>
-            <option value="utf-16le">UTF-16 LE</option>
-            <option value="utf-16be">UTF-16 BE</option>
-            <option value="windows-1252">Windows-1252</option>
-            <option value="gb18030">GB18030</option>
-            <option value="big5">Big5</option></select
-          ><label for="csv-delimiter">输入分隔符</label
-          ><select id="csv-delimiter">
-            <option value="">根据内容识别</option>
-            <option value=",">逗号</option>
-            <option value=";">分号</option>
-            <option value="&#9;">Tab</option>
-            <option value="|">|</option></select
-          ><label for="csv-formula">可能执行为公式的单元格</label
-          ><select id="csv-formula">
-            <option value="ask">发现时暂停导出</option>
-            <option value="escape">加前导单引号（会改变值）</option>
-            <option value="preserve">
-              原样保留（表格软件可能执行）
-            </option></select
-          ><button class="primary" id="csv-check">检查 CSV</button
-          ><button id="csv-cancel" hidden>取消检查</button>
+          <div class="panel-title"><span class="step">2</span><h2>检查格式</h2></div>
+          <div class="field">
+            <label for="csv-encoding">文件编码</label>
+            <select id="csv-encoding">
+              <option value="auto">自动：UTF-8 / UTF-16 BOM</option>
+              <option value="utf-8">UTF-8</option>
+              <option value="utf-16le">UTF-16 LE</option>
+              <option value="utf-16be">UTF-16 BE</option>
+              <option value="windows-1252">Windows-1252</option>
+              <option value="gb18030">GB18030</option>
+              <option value="big5">Big5</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="csv-delimiter">输入分隔符</label>
+            <select id="csv-delimiter">
+              <option value="">根据内容识别</option>
+              <option value=",">逗号</option>
+              <option value=";">分号</option>
+              <option value="&#9;">Tab</option>
+              <option value="|">|</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="csv-formula">可能执行为公式的单元格</label>
+            <select id="csv-formula">
+              <option value="ask">发现时暂停导出</option>
+              <option value="escape">加前导单引号（会改变值）</option>
+              <option value="preserve">原样保留（表格软件可能执行）</option>
+            </select>
+          </div>
+          <div class="actions">
+            <button class="primary" id="csv-check">检查 CSV</button>
+            <button id="csv-cancel" hidden>取消检查</button>
+          </div>
         </aside>
       </div>
-      <p id="csv-error" class="error" role="alert" hidden></p>
-      <section
-        id="csv-result"
-        class="panel csv-result"
-        hidden
-        aria-live="polite"
-      >
-        <h2 id="csv-summary"></h2>
-        <ul id="csv-issues"></ul>
-        <p class="small">
-          预览仅显示前 20 条记录、10
-          列，长单元格仅在预览中截短。导出包含全部已检查记录。
-        </p>
-        <div class="csv-scroll">
-          <table>
-            <tbody id="csv-preview"></tbody>
-          </table>
+      <p id="csv-error" class="notice error" role="alert" hidden></p>
+      <section id="csv-result" class="panel result" hidden aria-live="polite">
+        <div class="panel-title"><span class="step">3</span><h2 id="csv-summary"></h2></div>
+        <ul class="metrics" id="csv-metrics"></ul>
+        <ul class="issues" id="csv-issues"></ul>
+        <p class="small">预览仅显示前 20 条记录、10 列，长单元格仅在预览中截短。导出包含全部已检查记录。</p>
+        <div class="table-scroll" tabindex="0" role="region" aria-label="CSV 预览">
+          <table class="data-table has-header"><tbody id="csv-preview"></tbody></table>
         </div>
-        <p>
-          <a class="download" id="csv-download" download="cleaned.csv" hidden
-            >下载整理后的 CSV</a
-          >
-        </p>
-        <p class="small">
-          输出为带 BOM 的 UTF-8、逗号分隔、CRLF 换行、所有单元格加引号。在 Excel
-          中请将编号列按文本导入；引号本身无法阻止 Excel 自动改值。
-        </p>
+        <div class="actions result-actions">
+          <a class="button download" id="csv-download" download="cleaned.csv" hidden>下载整理后的 CSV</a>
+        </div>
+        <p class="small">输出为带 BOM 的 UTF-8、逗号分隔、CRLF 换行、所有单元格加引号。在 Excel 中请将编号列按文本导入；引号本身无法阻止 Excel 自动改值。</p>
       </section>
-      <section class="tool-intro">
+      <section class="section scope">
         <h2>能做什么，不能做什么</h2>
-        <p>
-          这里只检查 CSV 结构，不校验 Shopify、Stripe
-          或财务业务规则。引号损坏、列数不一致时需先修正。日期、小数、空格和编号保持原值；已经丢失的前导零或被舍去的数字无法恢复。
-        </p>
-        <p>
-          平台具体要求请参阅
-          <a
-            href="https://help.shopify.com/en/manual/products/import-export/import-products"
-            rel="noreferrer"
-            >Shopify CSV import guidance</a
-          >.
-        </p>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>检查并保留</h3>
+            <ul>
+            <li>导出前检查引号、列数和编码。</li>
+            <li>日期、小数、空格和编号保持原值。</li>
+            <li>输出带 BOM 的 UTF-8、逗号分隔、引号一致的 CSV。</li>
+            <li>发现公式时，需要你选择处理方式后才导出。</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>不会做</h3>
+            <ul>
+            <li>替你修复损坏的引号或不一致的列数，需先自行修正。</li>
+            <li>恢复已经丢失的前导零或被舍去的数字。</li>
+            <li>校验 Shopify、Stripe 或财务业务规则。</li>
+            <li>保证任何平台一定接受导入。</li>
+            </ul>
+          </div>
+        </div>
+        <p class="small">平台具体要求请参阅 <a href="https://help.shopify.com/en/manual/products/import-export/import-products" rel="noreferrer">Shopify CSV import guidance</a>。</p>
+      </section>
+      <section class="section more-tools">
+        <h2>其他工具</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>照片</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">上传网站限制了文件大小</span><span class="task-get">把几张照片合成一份不超限的 PDF</span><span class="task-meta">照片转 PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/zh/photo-privacy/" data-tool="photo_privacy"><span class="task-need">准备把手机照片发给别人</span><span class="task-get">先看看并去掉其中的位置、拍摄时间和设备信息</span><span class="task-meta">照片隐私检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">收到一张排班表、考试表或赛程表</span><span class="task-get">逐条核对日期后，一次存进手机日历</span><span class="task-meta">排班表转日历</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>通讯录备份</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/vcf-select/" data-tool="vcf_select"><span class="task-need">只想发几个联系人，不想给出整份通讯录</span><span class="task-get">从 VCF 文件里挑出需要的人和字段</span><span class="task-meta">挑选联系人</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
       </section>
     </main>
-    <footer>
+    <footer class="site-footer">
       <span>NoCloudFiles · 内容留在你的设备上</span>
-      <div class="footer-links">
-        <a href="/about.html">隐私与说明</a><a href="/source.zip">源代码</a>
-      </div>
+      <nav class="footer-links" aria-label="站点">
+        <a href="/about.html">隐私与说明</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
+        <a href="/third-party-notices.txt">开源组件</a>
+      </nav>
     </footer>
+    <noscript><p class="notice">此工具需要 JavaScript。请启用后重新打开本页。</p></noscript>
     <script type="module" src="/src/csv-ui.js"></script>
   </body>
 </html>

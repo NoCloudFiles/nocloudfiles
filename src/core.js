@@ -1,4 +1,11 @@
 import {tr} from './i18n.js';
+// Decimal units, matching the upload limits users see on other websites (1 MB = 1,000,000 bytes).
+export function formatBytes(n){
+ if(!Number.isFinite(n)||n<0)return '';
+ if(n<1000)return `${Math.round(n)} B`;
+ if(n<999_950)return `${(n/1000).toFixed(1)} KB`;
+ return `${(n/1_000_000).toFixed(2)} MB`;
+}
 export function declaredPixels(bytes,type){
  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
  if(type==='png'&&bytes.length>=24)return view.getUint32(16)*view.getUint32(20);

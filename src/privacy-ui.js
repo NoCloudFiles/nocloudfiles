@@ -1,8 +1,8 @@
 import "./site.js";
-import "./privacy.css";
 import ExifReader from "exifreader";
 import { track } from "./analytics-ui.js";
 import { tr } from "./i18n.js";
+import { setupDropzone } from "./dropzone.js";
 import { sniffImage } from "./core.js";
 import {
   baselinePixels,
@@ -17,6 +17,22 @@ const panel = document.querySelector("#inspection");
 const event = (name) => track(name, { input_source: "file" });
 const el = (tag, text) =>
   Object.assign(document.createElement(tag), { textContent: text ?? "" });
+setupDropzone({
+  zone: document.querySelector("#photo-drop"),
+  input,
+  status: document.querySelector("#photo-file-status"),
+});
+function stepPanel(number, title) {
+  const section = el("section"),
+    head = el("div"),
+    step = el("span", String(number));
+  section.className = "panel";
+  head.className = "panel-title";
+  step.className = "step";
+  head.append(step, el("h2", title));
+  section.append(head);
+  return section;
+}
 const labels = {
   author: tr("署名", "Author"),
   city: tr("城市", "City"),
@@ -116,7 +132,8 @@ async function inspect(file, id) {
     throw Error(tr("图片过大。", "Photo is too large."));
   img.alt = tr("静态主图预览", "Still photo preview");
   img.className = "privacy-preview";
-  panel.append(img);
+  const review = stepPanel(2, tr("原件中的信息", "What the original contains"));
+  review.append(img);
   const info = el(
     "p",
     tr(
@@ -158,20 +175,27 @@ async function inspect(file, id) {
   const detected = Object.entries(defaults)
     .filter(([, value]) => value !== undefined)
     .map(([key]) => labels[key]);
-  panel.append(
-    el(
-      "p",
-      detected.length
-        ? tr("原件含有：", "Found in the original: ") + detected.join(" · ")
-        : tr(
-            "未识别到可编辑的个人信息。展开下方列表可检查其他字段。",
-            "No editable personal details identified. Expand the list to inspect other fields.",
-          ),
-    ),
-    info,
-  );
+  if (detected.length) {
+    const found = el("ul");
+    found.className = "found";
+    found.setAttribute("aria-label", tr("原件含有", "Found in the original"));
+    for (const label of detected) found.append(el("li", label));
+    review.append(el("p", tr("原件含有：", "Found in the original:")), found);
+  } else
+    review.append(
+      el(
+        "p",
+        tr(
+          "未识别到可编辑的个人信息。展开下方列表可检查其他字段。",
+          "No editable personal details identified. Expand the list to inspect other fields.",
+        ),
+      ),
+    );
+  info.className = "small";
+  review.append(info);
   const details = el("details"),
     list = el("dl");
+  list.className = "field-list";
   details.append(
     el("summary", tr("查看原件中识别出的字段", "Inspect original metadata")),
     list,
@@ -195,9 +219,15 @@ async function inspect(file, id) {
         el("dd", block + tr(" · 移除", " · removed")),
       );
     }
-  panel.append(
-    details,
-    el("h2", tr("副本中保留哪些信息？", "What should the copy include?")),
+  review.append(details);
+  const choose = stepPanel(
+    3,
+    tr("副本中保留哪些信息？", "What should the copy include?"),
+  );
+  const fieldsBox = el("div");
+  fieldsBox.className = "privacy-fields";
+  panel.append(review, choose);
+  choose.append(
     el(
       "p",
       tr(
@@ -208,6 +238,7 @@ async function inspect(file, id) {
   );
   const controls = new Map(),
     result = el("div");
+  result.className = "privacy-output";
   function clearResult() {
     revoke(downloadUrl);
     downloadUrl = null;
@@ -233,8 +264,9 @@ async function inspect(file, id) {
     };
     editor.oninput = clearResult;
     controls.set(key, { check, editor });
+    editor.type = "text";
     row.append(check, caption, editor);
-    panel.append(row);
+    fieldsBox.append(row);
   }
   const fictional = el("button", tr("填入虚构示例", "Fill fictional details"));
   fictional.onclick = () => {
@@ -257,7 +289,10 @@ async function inspect(file, id) {
   };
   const build = el("button", tr("生成隐私副本", "Create private copy"));
   build.className = "primary";
-  panel.append(fictional, build, result);
+  const actions = el("div");
+  actions.className = "actions";
+  actions.append(build, fictional);
+  choose.append(fieldsBox, actions, result);
   build.onclick = async () => {
     clearResult();
     build.disabled = true;
@@ -315,6 +350,7 @@ async function inspect(file, id) {
         ),
       );
       const link = el("a", tr("下载静态 JPEG", "Download still JPEG"));
+      link.className = "button download";
       link.download = "private-photo.jpg";
       link.href = downloadUrl = URL.createObjectURL(output);
       link.addEventListener("click", () => event("download_click"), {
@@ -323,15 +359,16 @@ async function inspect(file, id) {
       result.append(link);
       event("photo_ready");
     } catch {
-      result.replaceChildren(
-        el(
-          "p",
-          tr(
-            "无法生成副本。请检查所选值和经纬度范围。",
-            "Could not create the copy. Check selected values and coordinate ranges.",
-          ),
+      const failure = el(
+        "p",
+        tr(
+          "无法生成副本。请检查所选值和经纬度范围。",
+          "Could not create the copy. Check selected values and coordinate ranges.",
         ),
       );
+      failure.className = "notice error";
+      failure.setAttribute("role", "alert");
+      result.replaceChildren(failure);
       track("generate_error", {
         input_source: "file",
         error_code: "generation_failed",
@@ -357,6 +394,7 @@ input.onchange = async () => {
   revoke(downloadUrl);
   panel.replaceChildren();
   status.textContent = "";
+  delete status.dataset.state;
   const file = input.files[0];
   if (!file) return;
   event("tool_start");
@@ -366,6 +404,7 @@ input.onchange = async () => {
   } catch (error) {
     if (id !== revision) return;
     panel.replaceChildren();
+    status.dataset.state = "error";
     status.textContent =
       error.message || tr("无法读取照片。", "Could not read the photo.");
     track("generate_error", {

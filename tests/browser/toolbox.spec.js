@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-test("toolbox exposes two independent tasks and languages", async ({
+test("home task index leads to the CSV tool", async ({
   page,
 }) => {
   await page.goto("/");
   await expect(
     page.getByRole("heading", { name: "Useful tools. No file uploads." }),
   ).toBeVisible();
-  await page.getByRole("link", { name: "Check a CSV", exact: true }).click();
+  await page.getByRole("link", { name: /A spreadsheet import keeps failing/ }).click();
   await expect(page.locator("h1")).toHaveText("Check and clean a CSV");
 });
 test("CSV example exports preserved identifiers, edits invalidate result, no content requests", async ({

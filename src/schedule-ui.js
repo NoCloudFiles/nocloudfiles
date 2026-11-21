@@ -1,4 +1,5 @@
-import { get, element, tr, downloads, report } from "./import-tools.js";
+import { get, element, tr, downloads, report, fileDrop } from "./import-tools.js";
+const drop = fileDrop();
 import { inspectCsv, decodeCsv } from "./csv-core.js";
 import { eventsFrom, writeCalendar, googleCsv } from "./schedule.js";
 const input = get("table"),
@@ -69,6 +70,8 @@ get("sample").onclick = () => {
   loadId++;
   reset();
   source = "sample";
+  get("file").value = "";
+  drop.refresh();
   input.value = tr(
     "班次\t日期\t时间段\n夜班\t2027-01-31\t22:00-06:00\n休息\t2027-02-01\t",
     "Title\tDate\tTime\nNight shift\t2027-01-31\t22:00-06:00\nDay off\t2027-02-01\t",

@@ -3,103 +3,115 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
     <title>排班表转日历 — NoCloudFiles</title>
-    <meta
-      name="description"
-      content="粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。"
-    />
-    <link
-      rel="canonical"
-      href="https://nocloudfiles.com/zh/schedule-to-calendar/"
-    />
-    <link
-      rel="alternate"
-      hreflang="en"
-      href="https://nocloudfiles.com/schedule-to-calendar/"
-    />
-    <link
-      rel="alternate"
-      hreflang="zh-Hans"
-      href="https://nocloudfiles.com/zh/schedule-to-calendar/"
-    />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://nocloudfiles.com/schedule-to-calendar/"
-    />
+    <meta name="description" content="粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="canonical" href="https://nocloudfiles.com/zh/schedule-to-calendar/" />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/schedule-to-calendar/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/schedule-to-calendar/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/schedule-to-calendar/" />
   </head>
   <body>
-    <header>
-      <a class="brand" href="/zh/">NoCloudFiles</a>
+    <header class="site-header">
+      <a class="brand" href="/zh/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
       <span class="header-note">免费 · 无需注册</span>
-      <a
-        class="language-switch"
-        href="/schedule-to-calendar/"
-        lang="en"
-        hreflang="en"
-        ><svg
-          aria-hidden="true"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
-        ><span>English</span></a
-      >
+      <a class="language-switch" href="/schedule-to-calendar/" lang="en" hreflang="en"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
     </header>
-    <main class="import-tool">
-      <section class="hero tool-intro">
+    <main>
+      <section class="intro">
+        <p class="eyebrow">日历 · 排班与课表</p>
         <h1>排班表转日历</h1>
-        <p>粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。</p>
+        <p class="lead">粘贴排班、考试或赛程表，逐条核对日期后导出日历文件。</p>
       </section>
-      <section class="tool-card">
-        <p id="safari-tip" hidden>要添加到 Apple 日历？建议先用 Safari 打开本页，再粘贴排班表。切换浏览器后需重新选择或粘贴表格。</p>
-        <label for="table">粘贴表格，包含首行表头</label
-        ><textarea id="table" spellcheck="false"></textarea>
-        <label for="file">或打开 CSV / TSV（2 MB）</label
-        ><input type="file" id="file" accept=".csv,.tsv,.txt" /><button
-          id="sample"
-        >
-          试用示例</button
-        ><button id="map">选择列</button>
-        <section id="mapping" hidden>
-          <h2>对应表格列</h2>
-          <div id="columns"></div>
-          <label
-            >斜线日期顺序<select id="order">
+      <dl class="brief">
+        <div><dt>需要准备</dt><dd>一张带表头的表格：从表格软件复制，或 CSV/TSV 文件。<a href="#howto">看格式示例</a></dd></div>
+        <div><dt>会得到</dt><dd>逐条预览后，得到 ICS 日历文件和 Google 日历 CSV</dd></div>
+        <div><dt>文件去向</dt><dd>只在本浏览器中处理，不上传，关闭页面即清空</dd></div>
+      </dl>
+      <div class="import-layout stack">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>添加排班表</h2></div>
+          <p id="safari-tip" class="notice" hidden>要添加到 Apple 日历？建议先用 Safari 打开本页，再粘贴排班表。切换浏览器后需重新选择或粘贴表格。</p>
+          <div class="field">
+            <label for="table">粘贴表格，包含首行表头</label>
+            <textarea id="table" spellcheck="false"></textarea>
+          </div>
+          <details class="howto" id="howto">
+            <summary>表格应该长什么样？</summary>
+            <pre class="preview-block">班次	日期	时间段
+夜班	2027-01-31	22:00-06:00
+休息	2027-02-01	</pre>
+            <ol>
+              <li>第一行是表头，之后一行一个事件。</li>
+              <li>日期和时间分成两列，或把时间段（如 22:00-06:00）放在一列。时间留空表示全天。</li>
+              <li>在 Excel 等表格软件里选中区域（包含表头）复制，直接粘贴到上面的输入框。</li>
+            </ol>
+          </details>
+          <div class="file-row" id="file-drop">
+            <input class="file-input visually-hidden" type="file" id="file" accept=".csv,.tsv,.txt" />
+            <label class="button" for="file">或打开 CSV / TSV（2 MB）</label>
+            <span class="file-status" id="file-status"></span>
+          </div>
+          <div class="actions">
+            <button class="primary" id="map">选择列</button>
+            <button id="sample">试用示例</button>
+          </div>
+        </section>
+        <section class="panel" id="mapping" hidden>
+          <div class="panel-title"><span class="step">2</span><h2>对应表格列</h2></div>
+          <div class="column-grid" id="columns"></div>
+          <div class="field">
+            <label for="order">斜线日期顺序</label>
+            <select id="order">
               <option value="">遇到 03/04/2027 时请选择</option>
               <option value="mdy">MM/DD/YYYY</option>
               <option value="dmy">DD/MM/YYYY</option>
-            </select></label
-          >
-          <p>按目标日历的本地钟点导入。时间留空表示全天事件。</p>
-          <button id="review">预览事件</button>
+            </select>
+          </div>
+          <p class="small">按目标日历的本地钟点导入。时间留空表示全天事件。跨夜班次的结束时间会记在次日。</p>
+          <button class="primary" id="review">预览事件</button>
         </section>
-        <p role="status" id="status"></p>
-        <pre id="preview"></pre>
-        <aside id="guide" hidden>
-          <p>
-            建议新建独立的“排班”日历，导入后核对数量和时间。如有误，删除该独立日历即可撤销整批事件。
-          </p>
-          <p>
-            iPhone：在 Safari 打开本页，下载并打开 ICS。看到日程列表后，核对顶部数量，点「添加全部」。如果只出现文件预览，可在 Mac 日历导入后通过 iCloud 同步。Android：在电脑打开 Google 日历 → 设置 →
-            导入和导出，再在手机同步所选日历。
-          </p>
-        </aside>
-        <div id="links"></div>
+        <p role="status" id="status" class="status"></p>
+        <pre id="preview" class="preview-block"></pre>
+        <aside id="guide" class="local-note" hidden><div><p>建议新建独立的“排班”日历，导入后核对数量和时间。如有误，删除该独立日历即可撤销整批事件。</p><p>iPhone：在 Safari 打开本页，下载并打开 ICS。看到日程列表后，核对顶部数量，点「添加全部」。如果只出现文件预览，可在 Mac 日历导入后通过 iCloud 同步。Android：在电脑打开 Google 日历 → 设置 → 导入和导出，再在手机同步所选日历。</p></div></aside>
+        <div id="links" class="actions"></div>
+      </div>
+      <section class="section more-tools">
+        <h2>其他工具</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>照片</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">上传网站限制了文件大小</span><span class="task-get">把几张照片合成一份不超限的 PDF</span><span class="task-meta">照片转 PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/zh/photo-privacy/" data-tool="photo_privacy"><span class="task-need">准备把手机照片发给别人</span><span class="task-get">先看看并去掉其中的位置、拍摄时间和设备信息</span><span class="task-meta">照片隐私检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/csv-check/" data-tool="csv_check"><span class="task-need">表格导入总是失败或乱码</span><span class="task-get">找出引号、列数和编码问题，导出干净的 CSV</span><span class="task-meta">CSV 检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>通讯录备份</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/vcf-select/" data-tool="vcf_select"><span class="task-need">只想发几个联系人，不想给出整份通讯录</span><span class="task-get">从 VCF 文件里挑出需要的人和字段</span><span class="task-meta">挑选联系人</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
       </section>
     </main>
-    <footer>
+    <footer class="site-footer">
       <span>NoCloudFiles · 内容留在你的设备上</span>
-      <div class="footer-links">
-        <a href="/about.html">隐私与说明</a
-        ><a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
-      </div>
+      <nav class="footer-links" aria-label="站点">
+        <a href="/about.html">隐私与说明</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
+        <a href="/third-party-notices.txt">开源组件</a>
+      </nav>
     </footer>
+    <noscript><p class="notice">此工具需要 JavaScript。请启用后重新打开本页。</p></noscript>
     <script type="module" src="/src/schedule-ui.js"></script>
   </body>
 </html>

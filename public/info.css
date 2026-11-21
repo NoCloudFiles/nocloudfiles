@@ -1,1 +1,75 @@
-:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;line-height:1.8;color:#284437;background:#f5f3ed}main{max-width:780px;margin:48px auto;padding:0 24px 48px}h1{font-size:32px;line-height:1.4;margin:32px 0}h2{font-size:20px;margin-top:32px}p,li{color:#526653}a{color:#285b45;text-underline-offset:4px}a:focus-visible{outline:3px solid #d69f48;outline-offset:4px}.muted{font-size:13px;margin-top:40px}
+/* Static info pages (not processed by Vite). Token values mirror src/style.css; see DESIGN.md. */
+:root {
+  --paper: #f5f3ed;
+  --surface: #fffefa;
+  --line: #dddad0;
+  --ink: #202c27;
+  --ink-2: #4a534e;
+  --ink-3: #646a63;
+  --accent: #285b45;
+  --focus: #d9952e;
+  --font-display: "Iowan Old Style", Charter, "Bitstream Charter", Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  color-scheme: light;
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  color: var(--ink);
+  background: var(--paper);
+  font-synthesis: none;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+}
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+}
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 4.4vw, 42px);
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 28px 0 20px;
+}
+:lang(zh) h1 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+h2 {
+  font-size: 19px;
+  line-height: 1.35;
+  font-weight: 650;
+  margin: 40px 0 10px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+p,
+li {
+  color: var(--ink-2);
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+}
+a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+main > a:first-child {
+  font-size: 14px;
+  color: var(--ink-3);
+}
+.muted {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-top: 40px;
+}
+@media (max-width: 760px) {
+  main {
+    padding: 24px 16px 48px;
+  }
+}

@@ -1,8 +1,8 @@
-import "./style.css";
-import "./toolbox.css";
 import { tr } from "./i18n.js";
 import { decodeCsv } from "./csv-core.js";
 import { setupAnalytics, track } from "./analytics-ui.js";
+import { setupDropzone } from "./dropzone.js";
+import "./page-ui.js";
 const $ = (id) => document.getElementById(id);
 let worker = null,
   url = null,
@@ -12,6 +12,27 @@ let worker = null,
   originalText = null,
   readVersion = 0,
   filePending = false;
+const dropzone = setupDropzone({
+  zone: $("csv-drop"),
+  input: $("csv-file"),
+  status: $("csv-file-status"),
+});
+const delimiterNames = {
+  ",": tr("逗号", "comma"),
+  ";": tr("分号", "semicolon"),
+  "\t": "Tab",
+  "|": "|",
+};
+function metric(value, label, tone) {
+  const li = document.createElement("li");
+  li.className = "metric" + (tone ? " " + tone : "");
+  const b = document.createElement("b");
+  b.textContent = value;
+  const span = document.createElement("span");
+  span.textContent = label;
+  li.append(b, span);
+  return li;
+}
 const event = (name, params = {}) =>
   track(name, { input_source: source, ...params });
 const messages = {
@@ -131,6 +152,7 @@ $("csv-example").onclick = () => {
   source = "sample";
   originalText = null;
   $("csv-file").value = "";
+  dropzone.refresh();
   $("csv-input").value =
     'sku;amount;note\r\n00123;1.2300;"Two lines\nhere"\r\n00004;2.00;"Keep leading zeros"';
   $("csv-delimiter").value = "";
@@ -141,6 +163,7 @@ $("csv-clear").onclick = () => {
   originalText = null;
   $("csv-input").value = "";
   $("csv-file").value = "";
+  dropzone.refresh();
   source = "file";
 };
 $("csv-cancel").onclick = () => {
@@ -197,6 +220,19 @@ $("csv-check").onclick = () => {
             "请先修正错误，未生成下载文件。",
             "Fix the errors before exporting. No download was created.",
           );
+      const errors = r.issues.filter((i) => i.severity === "error").length;
+      const warnings = r.issues.length - errors;
+      $("csv-result").classList.toggle("has-errors", !r.ok);
+      $("csv-metrics").replaceChildren(
+        metric(r.records.toLocaleString("en-US"), tr("条记录（含首行）", "records incl. first row")),
+        metric(String(r.columns), tr("列", "columns")),
+        metric(
+          delimiterNames[r.delimiter] ?? "?",
+          tr("分隔符", "separator"),
+        ),
+        metric(String(errors), tr("个错误", "errors"), errors ? "warn" : "ok"),
+        metric(String(warnings), tr("条提示", "notes"), warnings ? "warn" : ""),
+      );
       $("csv-issues").replaceChildren();
       for (const issue of r.issues.slice(0, 20)) {
         const li = document.createElement("li");

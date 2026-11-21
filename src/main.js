@@ -1,7 +1,8 @@
 import {tr,pageCount} from './i18n.js';
-import './style.css';
 import {track,setupAnalytics} from './analytics-ui.js';
-import {validateFiles,moveItem} from './core.js';
+import {validateFiles,moveItem,formatBytes} from './core.js';
+import {carriesFiles} from './dropzone.js';
+import './page-ui.js';
 import {readPhoto,renderPhoto,generatePdf,exampleFiles,emptyCrop} from './images.js';
 
 const $=id=>document.getElementById(id);
@@ -9,7 +10,6 @@ let photos=[],busy=false,controller=null,resultUrl=null,cropIndex=-1,cropDraft=n
 let downloadTracked=false,feedbackTracked=false;
 const inputSource=()=>{const kinds=new Set(photos.map(p=>p.source));return kinds.size>1?'mixed':kinds.has('file')?'file':'sample';};
 const taskEvent=(name,extra={})=>track(name,{input_source:inputSource(),...extra});
-const formatBytes=n=>n<1_000_000?`${(n/1000).toFixed(1)} KB`:`${(n/1_000_000).toFixed(2)} MB`;
 function error(message=''){$('error').textContent=message;$('error').hidden=!message;}
 function invalidate(){if(resultUrl)URL.revokeObjectURL(resultUrl);resultUrl=null;$('result').hidden=true;$('download').removeAttribute('href');$('pdf-preview').removeAttribute('src');$('pdf-preview').hidden=true;$('preview').textContent=tr('预览 PDF','Preview PDF');}
 function setBusy(value){busy=value;for(const id of ['choose','example','files','limit','filename','clear'])$(id).disabled=value;$('generate').disabled=value||!photos.length;document.querySelectorAll('.photo button').forEach(b=>{b.disabled=value||b.dataset.boundary==='true';});$('drop').setAttribute('aria-busy',String(value));}
@@ -53,7 +53,7 @@ for(const type of ['dragenter','dragover'])$('drop').addEventListener(type,e=>{e
 for(const type of ['dragleave','drop'])$('drop').addEventListener(type,e=>{e.preventDefault();$('drop').classList.remove('dragover');});
 $('drop').addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
 // Never let a drop outside the target navigate away and discard the user's session.
-window.addEventListener('dragover',e=>e.preventDefault());window.addEventListener('drop',e=>e.preventDefault());
+for(const type of ['dragover','drop'])window.addEventListener(type,e=>{if(carriesFiles(e))e.preventDefault();});
 $('example').onclick=async()=>{if(busy)return;setBusy(true);try{const files=await exampleFiles();setBusy(false);await addFiles(files,'sample');}catch(e){error(e.message);setBusy(false);}};
 $('clear').onclick=()=>{if(busy)return;photos.forEach(p=>URL.revokeObjectURL(p.thumb));photos=[];invalidate();error();render();};
 $('limit').onchange=()=>invalidate();$('filename').oninput=()=>{if(resultUrl)$('download').download=downloadName();};

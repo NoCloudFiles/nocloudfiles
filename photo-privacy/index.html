@@ -3,77 +3,115 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
     <title>Photo privacy check — NoCloudFiles</title>
-    <meta
-      name="description"
-      content="See what your phone photo reveals. Choose the details to keep and save a shareable still JPEG."
-    />
+    <meta name="description" content="See what your phone photo reveals. Choose the details to keep and save a shareable still JPEG." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
     <link rel="canonical" href="https://nocloudfiles.com/photo-privacy/" />
-    <link
-      rel="alternate"
-      hreflang="en"
-      href="https://nocloudfiles.com/photo-privacy/"
-    />
-    <link
-      rel="alternate"
-      hreflang="zh-Hans"
-      href="https://nocloudfiles.com/zh/photo-privacy/"
-    />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://nocloudfiles.com/photo-privacy/"
-    />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photo-privacy/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photo-privacy/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photo-privacy/" />
   </head>
   <body>
-    <header>
-      <a class="brand" href="/">NoCloudFiles</a>
+    <header class="site-header">
+      <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
       <span class="header-note">Free · No sign-up</span>
-      <a
-        class="language-switch"
-        href="/zh/photo-privacy/"
-        lang="zh-CN"
-        hreflang="zh-CN"
-        ><svg
-          aria-hidden="true"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
-        ><span>中文</span></a
-      >
+      <a class="language-switch" href="/zh/photo-privacy/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
     </header>
     <main>
-      <section class="hero tool-intro">
+      <section class="intro">
+        <p class="eyebrow">Photos · Before you share</p>
         <h1>Photo privacy check</h1>
-        <p>
-          See what your phone photo reveals. Choose the details to keep and save
-          a shareable still JPEG.
-        </p>
+        <p class="lead">See what your phone photo reveals. Choose the details to keep and save a shareable still JPEG.</p>
       </section>
-      <section class="tool-card">
-        <label for="photo">Choose an original JPEG or HEIC photo</label
-        ><input
-          id="photo"
-          type="file"
-          accept=".jpg,.jpeg,.heic,.heif,image/jpeg,image/heic,image/heif"
-        />
-        <p id="status" role="status"></p>
-        <div id="inspection"></div>
+      <dl class="brief">
+        <div><dt>You need</dt><dd>An original JPEG or HEIC photo, up to 32 MB. <a href="#howto">Where to get the original</a></dd></div>
+        <div><dt>You get</dt><dd>A still JPEG copy with only the details you keep. Your original is unchanged.</dd></div>
+        <div><dt>Where files go</dt><dd>Processed in this browser only. Nothing is uploaded; closing the page clears it.</dd></div>
+      </dl>
+      <div class="privacy-layout stack">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>Choose an original photo</h2></div>
+          <div class="dropzone" id="photo-drop">
+            <svg class="dropzone-icon" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <strong>Drop a photo here</strong>
+            <p class="small">Original JPEG or HEIC from your phone · up to 32 MB</p>
+            <input class="file-input visually-hidden" id="photo" type="file" accept=".jpg,.jpeg,.heic,.heif,image/jpeg,image/heic,image/heif" />
+            <div class="actions"><label class="button primary" for="photo">Choose a photo</label></div>
+            <p class="file-status" id="photo-file-status" aria-live="polite"></p>
+          </div>
+          <p id="status" class="status" role="status"></p>
+          <details class="howto" id="howto">
+            <summary>Where does this information come from, and how do I get the original?</summary>
+            <ol>
+              <li>When you share a photo from iPhone, it includes details such as date, location and device by default. You can turn off Location under Options before sharing.</li>
+              <li>To check the original on a computer, send it with AirDrop and turn on All Photos Data under Options. This sends the original file and its metadata.</li>
+              <li>Images compressed by chat apps may already have lost some details, so results can differ from the original.</li>
+            </ol>
+          </details>
+          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>Your photo stays on your device</strong><p>The original is read in this browser and never changed. Closing the page clears your work.</p></div></div>
+        </section>
+        <div id="inspection" class="stack"></div>
+      </div>
+      <section class="section scope">
+        <h2>What this check can and cannot do</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>What it does</h3>
+            <ul>
+            <li>Shows the metadata found in the original, on this device.</li>
+            <li>Removes all metadata by default, including thumbnails, maker data and unrecognized blocks.</li>
+            <li>Writes only the fields you select, then re-opens the copy to check them.</li>
+            <li>Saves one still JPEG. HDR photos use standard brightness.</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>What it does not do</h3>
+            <ul>
+            <li>Hide addresses, faces or anything else visible in the picture itself.</li>
+            <li>Process the paired video of a motion photo.</li>
+            <li>Change your original file.</li>
+            <li>Edit every field. Some specialized fields can only be viewed.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="small">Supports JPEG and HEIC/HEIF still photos up to 32 MB and 50 megapixels.</p>
+      </section>
+      <section class="section more-tools">
+        <h2>Other tools</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>Photos</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">A website limits your upload size</span><span class="task-get">Combine photos into one PDF that fits the limit</span><span class="task-meta">Photos to PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>A table or CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/csv-check/" data-tool="csv_check"><span class="task-need">A spreadsheet import keeps failing</span><span class="task-get">Find quoting, column and encoding problems, then export a clean CSV</span><span class="task-meta">CSV check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">You received a shift list or timetable</span><span class="task-get">Check each date, then add everything to your calendar</span><span class="task-meta">Schedule to calendar</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>A contacts backup</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/vcf-select/" data-tool="vcf_select"><span class="task-need">You want to send a few contacts, not the whole address book</span><span class="task-get">Pick the people and details to share from a VCF file</span><span class="task-meta">Select contacts</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
       </section>
     </main>
-    <footer>
+    <footer class="site-footer">
       <span>NoCloudFiles · Your content stays on your device</span>
-      <div class="footer-links">
-        <a href="/about-en.html">Privacy and about</a
-        ><a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
-      </div>
+      <nav class="footer-links" aria-label="Site">
+        <a href="/about-en.html">Privacy and about</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
+        <a href="/third-party-notices.txt">Open-source notices</a>
+      </nav>
     </footer>
+    <noscript><p class="notice">This tool needs JavaScript. Please enable it and reopen this page.</p></noscript>
     <script type="module" src="/src/privacy-ui.js"></script>
   </body>
 </html>

@@ -97,6 +97,6 @@ test('camera EXIF orientation is honored without a manual rotation',async({page}
 test('production headers and public documentation are present',async({page,request})=>{
  test.setTimeout(120000); // Includes downloading the 5 MB decoder source archive over the public network.
  const response=await page.goto('/zh/photos-to-pdf/');expect(response.headers()['content-security-policy']).toContain("form-action 'none'");
- await page.getByRole('link',{name:'项目说明与测试'}).click();await expect(page.getByRole('heading',{name:'让提交材料少一点折腾'})).toBeVisible();
+ await page.getByRole('link',{name:'隐私与说明'}).click();await expect(page.getByRole('heading',{name:'让提交材料少一点折腾'})).toBeVisible();
  for(const url of ['/source.zip','/third-party-notices.txt','/heic-to-source.tgz'])expect((await request.get(url)).status()).toBe(200);
 });

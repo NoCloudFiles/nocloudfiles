@@ -1,4 +1,5 @@
-import { get, element, tr, downloads, report } from "./import-tools.js";
+import { get, element, tr, downloads, report, fileDrop } from "./import-tools.js";
+const drop = fileDrop();
 import { writeCards } from "./contacts.js";
 const names = {
   TEL: tr("电话", "Phone"),
@@ -148,6 +149,7 @@ async function open(file, kind) {
 get("file").onchange = (e) => open(e.target.files[0], "file");
 get("sample").onclick = () => {
   get("file").value = "";
+  drop.refresh();
   open(
     new Blob([
       "BEGIN:VCARD\r\nVERSION:3.0\r\nFN:Alex Lin\r\nTEL:+1-202-555-0100\r\nNOTE:Personal note\r\nEND:VCARD\r\nBEGIN:VCARD\r\nVERSION:3.0\r\nFN:林小明\r\nEMAIL:example@example.org\r\nEND:VCARD\r\n",

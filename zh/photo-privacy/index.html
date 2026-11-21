@@ -3,73 +3,115 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
     <title>照片隐私检查 — NoCloudFiles</title>
-    <meta
-      name="description"
-      content="查看手机原图中记录的位置、拍摄时间和署名，选择要保留的信息，生成可分享的静态 JPEG。"
-    />
+    <meta name="description" content="查看手机原图中记录的位置、拍摄时间和署名，选择要保留的信息，生成可分享的静态 JPEG。" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
     <link rel="canonical" href="https://nocloudfiles.com/zh/photo-privacy/" />
-    <link
-      rel="alternate"
-      hreflang="en"
-      href="https://nocloudfiles.com/photo-privacy/"
-    />
-    <link
-      rel="alternate"
-      hreflang="zh-Hans"
-      href="https://nocloudfiles.com/zh/photo-privacy/"
-    />
-    <link
-      rel="alternate"
-      hreflang="x-default"
-      href="https://nocloudfiles.com/photo-privacy/"
-    />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photo-privacy/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photo-privacy/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photo-privacy/" />
   </head>
   <body>
-    <header>
-      <a class="brand" href="/zh/">NoCloudFiles</a>
+    <header class="site-header">
+      <a class="brand" href="/zh/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
       <span class="header-note">免费 · 无需注册</span>
-      <a class="language-switch" href="/photo-privacy/" lang="en" hreflang="en"
-        ><svg
-          aria-hidden="true"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-        >
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
-        ><span>English</span></a
-      >
+      <a class="language-switch" href="/photo-privacy/" lang="en" hreflang="en"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
     </header>
     <main>
-      <section class="hero tool-intro">
+      <section class="intro">
+        <p class="eyebrow">照片 · 分享之前</p>
         <h1>照片隐私检查</h1>
-        <p>
-          查看手机原图中记录的位置、拍摄时间和署名，选择要保留的信息，生成可分享的静态
-          JPEG。
-        </p>
+        <p class="lead">查看手机原图中记录的位置、拍摄时间和署名，选择要保留的信息，生成可分享的静态 JPEG。</p>
       </section>
-      <section class="tool-card">
-        <label for="photo">选择 JPEG 或 HEIC 原图</label
-        ><input
-          id="photo"
-          type="file"
-          accept=".jpg,.jpeg,.heic,.heif,image/jpeg,image/heic,image/heif"
-        />
-        <p id="status" role="status"></p>
-        <div id="inspection"></div>
+      <dl class="brief">
+        <div><dt>需要准备</dt><dd>一张 JPEG 或 HEIC 原图，最多 32 MB。<a href="#howto">怎么拿到原图</a></dd></div>
+        <div><dt>会得到</dt><dd>一张静态 JPEG 副本，只含你选择保留的信息；原图不变</dd></div>
+        <div><dt>文件去向</dt><dd>只在本浏览器中处理，不上传，关闭页面即清空</dd></div>
+      </dl>
+      <div class="privacy-layout stack">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>选择原图</h2></div>
+          <div class="dropzone" id="photo-drop">
+            <svg class="dropzone-icon" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <strong>把照片拖到这里</strong>
+            <p class="small">手机拍摄的 JPEG 或 HEIC 原图 · 最多 32 MB</p>
+            <input class="file-input visually-hidden" id="photo" type="file" accept=".jpg,.jpeg,.heic,.heif,image/jpeg,image/heic,image/heif" />
+            <div class="actions"><label class="button primary" for="photo">选择照片</label></div>
+            <p class="file-status" id="photo-file-status" aria-live="polite"></p>
+          </div>
+          <p id="status" class="status" role="status"></p>
+          <details class="howto" id="howto">
+            <summary>照片里的信息从哪来？怎么拿到原图</summary>
+            <ol>
+              <li>iPhone 分享照片时，默认会带上日期、位置、设备等信息；分享前可在「选项」里关闭「位置」。</li>
+              <li>想在电脑上检查原图：用 AirDrop 发送，并在「选项」里打开「所有照片数据」，会传送原始文件和元数据。</li>
+              <li>聊天软件压缩过的图片可能已经去掉部分信息，检查结果会和原图不同。</li>
+            </ol>
+          </details>
+          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>照片留在你的设备上</strong><p>原图只在本浏览器中读取，不会被修改。关闭页面后自动清空。</p></div></div>
+        </section>
+        <div id="inspection" class="stack"></div>
+      </div>
+      <section class="section scope">
+        <h2>能做什么，不能做什么</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>会做</h3>
+            <ul>
+            <li>在本设备上显示原图中识别出的元数据。</li>
+            <li>默认移除全部元数据，包括缩略图、厂商数据和无法识别的数据块。</li>
+            <li>只写入你勾选的字段，并重新读取副本进行核对。</li>
+            <li>输出一张静态 JPEG；HDR 照片使用标准亮度。</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>不会做</h3>
+            <ul>
+            <li>遮挡画面中可见的地址、人脸等内容。</li>
+            <li>处理动态照片配对的视频。</li>
+            <li>修改你的原图。</li>
+            <li>编辑所有字段：部分专用字段只能查看。</li>
+            </ul>
+          </div>
+        </div>
+        <p class="small">支持 JPEG 与 HEIC/HEIF 静态照片，最多 32 MB、5000 万像素。</p>
+      </section>
+      <section class="section more-tools">
+        <h2>其他工具</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>照片</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/photos-to-pdf/" data-tool="photos_to_pdf"><span class="task-need">上传网站限制了文件大小</span><span class="task-get">把几张照片合成一份不超限的 PDF</span><span class="task-meta">照片转 PDF</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/csv-check/" data-tool="csv_check"><span class="task-need">表格导入总是失败或乱码</span><span class="task-get">找出引号、列数和编码问题，导出干净的 CSV</span><span class="task-meta">CSV 检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/zh/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">收到一张排班表、考试表或赛程表</span><span class="task-get">逐条核对日期后，一次存进手机日历</span><span class="task-meta">排班表转日历</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>通讯录备份</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/vcf-select/" data-tool="vcf_select"><span class="task-need">只想发几个联系人，不想给出整份通讯录</span><span class="task-get">从 VCF 文件里挑出需要的人和字段</span><span class="task-meta">挑选联系人</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
       </section>
     </main>
-    <footer>
+    <footer class="site-footer">
       <span>NoCloudFiles · 内容留在你的设备上</span>
-      <div class="footer-links">
-        <a href="/about.html">隐私与说明</a
-        ><a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
-      </div>
+      <nav class="footer-links" aria-label="站点">
+        <a href="/about.html">隐私与说明</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
+        <a href="/third-party-notices.txt">开源组件</a>
+      </nav>
     </footer>
+    <noscript><p class="notice">此工具需要 JavaScript。请启用后重新打开本页。</p></noscript>
     <script type="module" src="/src/privacy-ui.js"></script>
   </body>
 </html>

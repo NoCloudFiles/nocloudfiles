@@ -41,3 +41,9 @@ test('page views identify only a bounded tool name',()=>{
  assert.equal(page.tool_id,toolId==='private-filename'?undefined:toolId);
  }
 });
+
+test('tool choice carries only a bounded target tool',()=>{
+ assert.deepEqual(safeEvent('tool_select',{tool_id:'home',target_tool:'csv_check',href:'/csv-check/?q=secret'}),{tool_id:'home',target_tool:'csv_check'});
+ assert.deepEqual(safeEvent('tool_select',{target_tool:'home'}),{});
+ assert.deepEqual(safeEvent('tool_select',{target_tool:'secret-tool'}),{});
+});

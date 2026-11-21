@@ -1,31 +1,216 @@
 <!doctype html>
-<html lang="zh-CN" data-tool="photos_to_pdf"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#285b45"><meta name="description" content="把手机照片整理为符合上传大小限制的PDF。免费排序、旋转、裁边，文件只在你的设备上处理，无需注册。"><title>照片整理成上传用 PDF — NoCloudFiles</title><link rel="icon" href="/favicon.svg"><script type="module" src="/src/main.js"></script><link rel="canonical" href="https://nocloudfiles.com/zh/photos-to-pdf/"><link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photos-to-pdf/"><link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photos-to-pdf/"><link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photos-to-pdf/"></head>
-<body>
-<header>
-  <a class="brand" href="/zh/"><span class="brand-mark" aria-hidden="true">▤</span>NoCloudFiles</a>
-  <span class="header-note">免费 · 无需注册</span>
-  <a class="language-switch" href="/photos-to-pdf/" lang="en" hreflang="en"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
-</header>
-<main>
- <section class="hero"><div><div class="eyebrow">PAPER READY / 材料整理小帮手</div><h1>几张照片，<br><span>整理成一份上传用 PDF。</span></h1><p class="intro">排好顺序、转正方向，再按网站的大小要求整理。<br>让提交材料这件小事，少一点来回折腾。</p></div><div class="paper-art" aria-hidden="true"><div class="sheet"></div><div class="sheet front"></div><div class="paper-stamp">✓</div></div></section>
- <div class="workspace">
- <section class="panel"><div class="panel-title"><span class="step">1</span><h2>放入你的材料照片</h2></div>
-  <div class="drop" id="drop"><div class="upload-icon" aria-hidden="true">↥</div><strong>把照片拖到这里</strong><p class="small">也可以从手机相册或电脑中选择</p><div class="actions"><button class="primary" id="choose">选择照片</button><button class="text-button" id="example">用示例试一试</button></div><p class="small">JPG / PNG / WebP / HEIC · 最多 20 张</p><input hidden id="files" type="file" aria-label="选择照片" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple></div>
-  <div class="notice" id="error" role="alert" hidden></div>
-  <div id="session" hidden><div class="session-row"><strong id="count"></strong><button class="text-button" id="clear">清空照片</button></div><p class="small">按从左到右、从上到下的顺序生成，每张照片一页。</p><div class="photos" id="photos"></div></div>
-  <div class="privacy"><span aria-hidden="true">◈</span><div><strong>照片留在你的设备上</strong><p>处理过程不上传照片，不修改原文件。关闭页面后自动清空。</p></div></div>
- </section>
- <aside class="panel side"><div class="panel-title"><span class="step">2</span><h2>设置上传要求</h2></div><label for="limit">网站允许的文件大小</label><select id="limit"><option value="500000">500 KB 以内</option><option value="1000000" selected>1 MB 以内</option><option value="2000000">2 MB 以内</option><option value="5000000">5 MB 以内</option><option value="10000000">10 MB 以内</option></select><p class="small">按提交网站的提示选择。MB 按 1,000,000 字节计算。</p><label for="filename">下载文件名</label><input id="filename" type="text" maxlength="60" value="整理好的材料" autocomplete="off"><p class="small">自动保存为 .pdf 文件</p><button class="primary" id="generate" disabled>整理成 PDF</button><div class="progress" id="progress" role="status" aria-live="polite" hidden><span id="progress-text"></span><progress id="bar" max="1"></progress><button class="text-button" id="cancel">取消处理</button></div><hr><ul class="micro-list"><li>完整保留图片，等比放进 A4 页面</li><li>按实际 PDF 大小逐步调整</li><li>下载前，请检查小字是否清楚</li></ul></aside>
- </div>
- <section class="result" id="result" hidden aria-live="polite"><div class="result-top"><div><h2 id="result-title"></h2><p class="file-stats" id="stats"></p></div><a class="download" id="download">下载 PDF</a></div><p id="quality"></p><div class="actions"><button id="preview">预览 PDF</button><button class="text-button" id="feedback-open">这次有帮上忙吗？</button></div><p class="small">请确认方向、顺序和文字清晰度。这里只核对文件大小，不保证网站审核通过；输出是图片型 PDF，不含可搜索文字。</p><iframe class="result-preview" id="pdf-preview" title="生成的 PDF 预览" hidden></iframe></section>
- <section class="help"><h2>三步，把材料准备好</h2><div class="help-grid"><div><h3>01 / 选择清楚的照片</h3><p>拍全纸张，避开反光。已有 PDF、Word 或需要保留签名的原始表单，请使用原文件。</p></div><div><h3>02 / 排序、旋转和裁边</h3><p>用前移、后移调整页序，旋转侧着的照片。裁边只移除你明确选中的部分。</p></div><div><h3>03 / 检查后再提交</h3><p>放大 PDF 看一看小字。上限太小或页数太多时，减少页数会比继续压缩更清楚。</p></div></div></section>
- <section class="help"><details><summary>为什么不支持把所有文件都转成 PDF？</summary><p>这个工具专门处理照片。Word、可填写表单、数字签名和已有 PDF 有各自的结构，重新转成图片可能损坏重要信息，因此不在这里转换。输出也不适合明确要求可搜索文字的系统。</p></details><details><summary>照片太大或生成后仍超过限制怎么办？</summary><p>每张照片最多 20 MB，总共最多 80 MB；高分辨率照片请先缩小。若最低清晰度档位仍超限，工具会停止。请删掉不需要的页、裁去无关边缘，或在网站允许时分成几份提交。不会偷偷漏掉照片。</p></details><details><summary>隐私与免费使用</summary><p>无需注册，没有广告。只有你允许可选 Google Analytics 后，才会向 Google 发送使用事件和正常连接信息；不包含材料内容。照片、文件名与生成内容不发送到服务器，也不保存在浏览器长期存储中。Cloudflare 托管页面，会像其他网站一样处理正常访问的网络信息。HEIC 解码组件按需从本站下载。</p></details></section>
-</main><footer><span>NoCloudFiles · 内容留在你的设备上</span><div class="footer-links"><a href="/about.html">项目说明与测试</a><a href="/third-party-notices.txt">开源组件</a></div></footer>
-<dialog id="crop-dialog" aria-labelledby="crop-title"><h2 id="crop-title">裁去照片四周</h2><p class="small">滑动后看预览，确认没有裁掉文字。边缘以原照片方向计算。</p><canvas id="crop-preview"></canvas><div id="crop-inputs"></div><div class="actions"><button id="crop-reset">恢复完整照片</button><button id="crop-cancel">取消</button><button class="primary" id="crop-save">保存裁边</button></div></dialog>
-<dialog id="feedback-dialog" aria-labelledby="feedback-title"><h2 id="feedback-title">这次有帮上忙吗？</h2><p class="small">可把下面的文字复制给邀请你试用的人。请勿附带私人材料。下面的文字备注不会发送；分类反馈仅在允许统计后发送。</p><fieldset><legend>可选：这次结果如何？</legend><p class="small">仅发送分类结果，而且只在你允许统计后发送。</p><div class="actions"><button data-feedback="helped">有帮上忙</button><button data-feedback="unclear">文字不清楚</button><button data-feedback="not_accepted">上传仍被拒绝</button><button data-feedback="other">其他问题</button></div></fieldset><textarea class="feedback" id="feedback-text" aria-label="试用反馈">我要提交的材料类型：
+<html lang="zh-CN" data-tool="photos_to_pdf">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
+    <title>照片整理成上传用 PDF — NoCloudFiles</title>
+    <meta name="description" content="把手机照片整理为符合上传大小限制的PDF。免费排序、旋转、裁边，文件只在你的设备上处理，无需注册。" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="canonical" href="https://nocloudfiles.com/zh/photos-to-pdf/" />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photos-to-pdf/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photos-to-pdf/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photos-to-pdf/" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/zh/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
+      <span class="header-note">免费 · 无需注册</span>
+      <a class="language-switch" href="/photos-to-pdf/" lang="en" hreflang="en"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>English</span></a>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">照片转 PDF · 上传前整理</p>
+        <h1>几张照片，<br /><span class="accent">整理成一份上传用 PDF。</span></h1>
+        <p class="lead">排好顺序、转正方向，再按网站的大小要求整理。让提交材料这件小事，少一点来回折腾。</p>
+      </section>
+      <dl class="brief">
+        <div><dt>需要准备</dt><dd>JPG、PNG、WebP 或 HEIC 照片，最多 20 张</dd></div>
+        <div><dt>会得到</dt><dd>一份不超过所选大小上限的 PDF，每张照片一页</dd></div>
+        <div><dt>文件去向</dt><dd>只在本浏览器中处理，不上传，关闭页面即清空</dd></div>
+      </dl>
+      <div class="workspace">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>放入你的材料照片</h2></div>
+          <div class="dropzone" id="drop">
+            <svg class="dropzone-icon" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <strong>把照片拖到这里</strong>
+            <p class="small">也可以从手机相册或电脑中选择</p>
+            <div class="actions">
+              <button class="primary" id="choose">选择照片</button>
+              <button class="text-button" id="example">用示例试一试</button>
+            </div>
+            <p class="small">JPG / PNG / WebP / HEIC · 最多 20 张</p>
+            <input hidden id="files" type="file" aria-label="选择照片" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple />
+          </div>
+          <div class="notice error" id="error" role="alert" hidden></div>
+          <div id="session" hidden>
+            <div class="session-row"><strong id="count"></strong><button class="text-button" id="clear">清空照片</button></div>
+            <p class="small">按从左到右、从上到下的顺序生成，每张照片一页。</p>
+            <div class="photos" id="photos"></div>
+          </div>
+          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>照片留在你的设备上</strong><p>处理过程不上传照片，不修改原文件。关闭页面后自动清空。</p></div></div>
+        </section>
+        <aside class="panel side">
+          <div class="panel-title"><span class="step">2</span><h2>设置上传要求</h2></div>
+          <div class="field">
+            <label for="limit">网站允许的文件大小</label>
+            <select id="limit">
+              <option value="500000">500 KB 以内</option>
+              <option value="1000000" selected>1 MB 以内</option>
+              <option value="2000000">2 MB 以内</option>
+              <option value="5000000">5 MB 以内</option>
+              <option value="10000000">10 MB 以内</option>
+            </select>
+            <p class="small">按提交网站的提示选择。MB 按 1,000,000 字节计算。</p>
+          </div>
+          <div class="field">
+            <label for="filename">下载文件名</label>
+            <input id="filename" type="text" maxlength="60" value="整理好的材料" autocomplete="off" />
+            <p class="small">自动保存为 .pdf 文件</p>
+          </div>
+          <button class="primary" id="generate" disabled>整理成 PDF</button>
+          <div class="progress" id="progress" role="status" aria-live="polite" hidden>
+            <span id="progress-text"></span><progress id="bar" max="1"></progress>
+            <button class="text-button" id="cancel">取消处理</button>
+          </div>
+          <hr />
+          <ul class="micro-list">
+            <li>完整保留图片，等比放进 A4 页面</li>
+            <li>按实际 PDF 大小逐步调整</li>
+            <li>下载前，请检查小字是否清楚</li>
+          </ul>
+        </aside>
+      </div>
+      <section class="panel result" id="result" hidden aria-live="polite">
+        <div class="result-top">
+          <div class="panel-title"><span class="step">3</span><div><h2 id="result-title"></h2><p class="file-stats" id="stats"></p></div></div>
+          <a class="button download" id="download">下载 PDF</a>
+        </div>
+        <p id="quality"></p>
+        <div class="actions">
+          <button id="preview">预览 PDF</button>
+          <button class="text-button" id="feedback-open">这次有帮上忙吗？</button>
+        </div>
+        <p class="small">请确认方向、顺序和文字清晰度。这里只核对文件大小，不保证网站审核通过；输出是图片型 PDF，不含可搜索文字。</p>
+        <iframe class="result-preview" id="pdf-preview" title="生成的 PDF 预览" hidden></iframe>
+      </section>
+      <section class="section">
+        <h2>三步，把材料准备好</h2>
+        <div class="steps-grid">
+          <div>
+            <h3><span class="mono">01</span>选择清楚的照片</h3>
+            <p>拍全纸张，避开反光。已有 PDF、Word 或需要保留签名的原始表单，请使用原文件。</p>
+          </div>
+          <div>
+            <h3><span class="mono">02</span>排序、旋转和裁边</h3>
+            <p>用前移、后移调整页序，旋转侧着的照片。裁边只移除你明确选中的部分。</p>
+          </div>
+          <div>
+            <h3><span class="mono">03</span>检查后再提交</h3>
+            <p>放大 PDF 看一看小字。上限太小或页数太多时，减少页数会比继续压缩更清楚。</p>
+          </div>
+        </div>
+      </section>
+      <section class="section scope">
+        <h2>能做什么，不能做什么</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>会做</h3>
+            <ul>
+            <li>每张照片单独一页，完整等比放入 A4。</li>
+            <li>按实际 PDF 字节数核对你选择的上限。</li>
+            <li>可排序、旋转，并裁去你选定的边缘。</li>
+            <li>无法达标时明确停止，不会悄悄漏掉页面。</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>不会做</h3>
+            <ul>
+            <li>压缩或转换已有 PDF、Word 文件或签名表单。</li>
+            <li>生成可搜索文字；输出是图片型 PDF。</li>
+            <li>保证提交网站一定接受。</li>
+            <li>保留实况照片视频；HEIC 只取静态主图。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="section faq">
+        <h2>常见问题</h2>
+        <details><summary>为什么不支持把所有文件都转成 PDF？</summary><p>这个工具专门处理照片。Word、可填写表单、数字签名和已有 PDF 有各自的结构，重新转成图片可能损坏重要信息，因此不在这里转换。输出也不适合明确要求可搜索文字的系统。</p></details>
+        <details><summary>照片太大或生成后仍超过限制怎么办？</summary><p>每张照片最多 20 MB，总共最多 80 MB；高分辨率照片请先缩小。若最低清晰度档位仍超限，工具会停止。请删掉不需要的页、裁去无关边缘，或在网站允许时分成几份提交。不会偷偷漏掉照片。</p></details>
+        <details><summary>隐私与免费使用</summary><p>无需注册，没有广告。只有你允许可选 Google Analytics 后，才会向 Google 发送使用事件和正常连接信息；不包含材料内容。照片、文件名与生成内容不发送到服务器，也不保存在浏览器长期存储中。Cloudflare 托管页面，会像其他网站一样处理正常访问的网络信息。HEIC 解码组件按需从本站下载。</p></details>
+      </section>
+      <section class="section more-tools">
+        <h2>其他工具</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>照片</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/photo-privacy/" data-tool="photo_privacy"><span class="task-need">准备把手机照片发给别人</span><span class="task-get">先看看并去掉其中的位置、拍摄时间和设备信息</span><span class="task-meta">照片隐私检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>表格或 CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/csv-check/" data-tool="csv_check"><span class="task-need">表格导入总是失败或乱码</span><span class="task-get">找出引号、列数和编码问题，导出干净的 CSV</span><span class="task-meta">CSV 检查</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/zh/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">收到一张排班表、考试表或赛程表</span><span class="task-get">逐条核对日期后，一次存进手机日历</span><span class="task-meta">排班表转日历</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>通讯录备份</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/zh/vcf-select/" data-tool="vcf_select"><span class="task-need">只想发几个联系人，不想给出整份通讯录</span><span class="task-get">从 VCF 文件里挑出需要的人和字段</span><span class="task-meta">挑选联系人</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>NoCloudFiles · 内容留在你的设备上</span>
+      <nav class="footer-links" aria-label="站点">
+        <a href="/about.html">隐私与说明</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">源代码</a>
+        <a href="/third-party-notices.txt">开源组件</a>
+      </nav>
+    </footer>
+    <dialog id="crop-dialog" aria-labelledby="crop-title">
+      <h2 id="crop-title">裁去照片四周</h2>
+      <p class="small">滑动后看预览，确认没有裁掉文字。边缘以原照片方向计算。</p>
+      <canvas id="crop-preview"></canvas>
+      <div id="crop-inputs"></div>
+      <div class="actions">
+        <button id="crop-reset">恢复完整照片</button>
+        <button id="crop-cancel">取消</button>
+        <button class="primary" id="crop-save">保存裁边</button>
+      </div>
+    </dialog>
+    <dialog id="feedback-dialog" aria-labelledby="feedback-title">
+      <h2 id="feedback-title">这次有帮上忙吗？</h2>
+      <p class="small">可把下面的文字复制给邀请你试用的人。请勿附带私人材料。下面的文字备注不会发送；分类反馈仅在允许统计后发送。</p>
+      <fieldset>
+        <legend>可选：这次结果如何？</legend>
+        <p class="small">仅发送分类结果，而且只在你允许统计后发送。</p>
+        <div class="actions">
+          <button data-feedback="helped">有帮上忙</button>
+          <button data-feedback="unclear">文字不清楚</button>
+          <button data-feedback="not_accepted">上传仍被拒绝</button>
+          <button data-feedback="other">其他问题</button>
+        </div>
+      </fieldset>
+      <textarea class="feedback" id="feedback-text" aria-label="试用反馈">我要提交的材料类型：
 原来卡住的步骤：
 现在是否完成：是 / 否
 PDF 文字是否清楚：是 / 否
-还需要别人帮忙的地方：</textarea><div class="actions"><button id="feedback-close">关闭</button><button class="primary" id="feedback-copy">复制反馈文字</button></div><p role="status" id="feedback-status" class="small"></p></dialog>
-<noscript><p class="notice">照片处理需要 JavaScript。请启用浏览器 JavaScript 后重新打开。</p></noscript>
-</body></html>
+还需要别人帮忙的地方：</textarea>
+      <div class="actions">
+        <button id="feedback-close">关闭</button>
+        <button class="primary" id="feedback-copy">复制反馈文字</button>
+      </div>
+      <p role="status" id="feedback-status" class="small"></p>
+    </dialog>
+    <noscript><p class="notice">此工具需要 JavaScript。请启用后重新打开本页。</p></noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

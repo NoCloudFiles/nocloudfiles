@@ -10,7 +10,7 @@ export async function setupAnalytics(){
   const box=document.createElement('section');box.className='analytics-choice';box.setAttribute('aria-label',tr('可选使用统计','Optional analytics'));
   const text=document.createElement('p');text.textContent=tr('允许可选使用统计，帮助我们了解工具是否有用？Google Analytics 会接收使用事件和正常连接信息，不含照片、文件名或材料内容。拒绝不影响使用。','Allow optional analytics to help us improve this tool? Google Analytics receives usage events and normal connection information, never photos, filenames or document content. Declining does not affect the tool.');
   const yes=document.createElement('button'),no=document.createElement('button');yes.textContent=tr('允许使用统计','Allow analytics');no.textContent=tr('拒绝使用统计','Decline analytics');
-  box.append(text,yes,no);document.querySelector('footer').before(box);
+  const inner=document.createElement('div');inner.className='analytics-choice-inner';const choices=document.createElement('div');choices.className='actions';choices.append(yes,no);inner.append(text,choices);box.append(inner);document.querySelector('footer').before(box);
   const settings=document.createElement('button');settings.className='footer-action';settings.textContent=tr('统计设置','Analytics settings');document.querySelector('.footer-links').append(settings);
   const send=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments);};
   analytics=createAnalytics({measurementId,toolId:document.documentElement.dataset.tool||'photos_to_pdf',language:isZh?'zh':'en',location:location.href,referrer:document.referrer,

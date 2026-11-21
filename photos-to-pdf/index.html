@@ -1,31 +1,216 @@
 <!doctype html>
-<html lang="en" data-tool="photos_to_pdf"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#285b45"><meta name="description" content="Combine photos into a PDF under your upload size limit. Free JPG, PNG and HEIC conversion, sorting, rotation and cropping in your browser. No sign-up."><title>Photos to PDF Under 1 MB — NoCloudFiles</title><link rel="icon" href="/favicon.svg"><script type="module" src="/src/main.js"></script><link rel="canonical" href="https://nocloudfiles.com/photos-to-pdf/"><link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photos-to-pdf/"><link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photos-to-pdf/"><link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photos-to-pdf/"></head>
-<body>
-<header>
-  <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">▤</span>NoCloudFiles</a>
-  <span class="header-note">Free · No sign-up</span>
-  <a class="language-switch" href="/zh/photos-to-pdf/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
-</header>
-<main>
- <section class="hero"><div><div class="eyebrow">PHOTO TO PDF / READY TO UPLOAD</div><h1>Your photos.<br><span>One PDF that fits.</span></h1><p class="intro">Combine document photos into a PDF under 1 MB, 2 MB or your chosen limit.<br>Reorder, rotate and crop before downloading.</p></div><div class="paper-art" aria-hidden="true"><div class="sheet"></div><div class="sheet front"></div><div class="paper-stamp">✓</div></div></section>
- <div class="workspace">
- <section class="panel"><div class="panel-title"><span class="step">1</span><h2>Add your document photos</h2></div>
-  <div class="drop" id="drop"><div class="upload-icon" aria-hidden="true">↥</div><strong>Drop your photos here</strong><p class="small">Or choose images from your phone or computer</p><div class="actions"><button class="primary" id="choose">Choose photos</button><button class="text-button" id="example">Try an example</button></div><p class="small">JPG / PNG / WebP / HEIC · Up to 20 photos</p><input hidden id="files" type="file" aria-label="Choose photos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple></div>
-  <div class="notice" id="error" role="alert" hidden></div>
-  <div id="session" hidden><div class="session-row"><strong id="count"></strong><button class="text-button" id="clear">Clear photos</button></div><p class="small">One photo per page, in the order shown.</p><div class="photos" id="photos"></div></div>
-  <div class="privacy"><span aria-hidden="true">◈</span><div><strong>Your photos stay on your device</strong><p>Photos are processed locally. Originals stay unchanged. Closing the page clears your work.</p></div></div>
- </section>
- <aside class="panel side"><div class="panel-title"><span class="step">2</span><h2>Set the upload limit</h2></div><label for="limit">Maximum file size</label><select id="limit"><option value="500000">500 KB or less</option><option value="1000000" selected>1 MB or less</option><option value="2000000">2 MB or less</option><option value="5000000">5 MB or less</option><option value="10000000">10 MB or less</option></select><p class="small">Use the limit shown on your upload website. 1 MB = 1,000,000 bytes.</p><label for="filename">Download filename</label><input id="filename" type="text" maxlength="60" value="prepared-documents" autocomplete="off"><p class="small">Saved as a .pdf file</p><button class="primary" id="generate" disabled>Create PDF</button><div class="progress" id="progress" role="status" aria-live="polite" hidden><span id="progress-text"></span><progress id="bar" max="1"></progress><button class="text-button" id="cancel">Cancel processing</button></div><hr><ul class="micro-list"><li>Whole images fitted onto A4 pages</li><li>Checks the actual PDF file size</li><li>Check small text before submitting</li></ul></aside>
- </div>
- <section class="result" id="result" hidden aria-live="polite"><div class="result-top"><div><h2 id="result-title"></h2><p class="file-stats" id="stats"></p></div><a class="download" id="download">Download PDF</a></div><p id="quality"></p><div class="actions"><button id="preview">Preview PDF</button><button class="text-button" id="feedback-open">Did this help?</button></div><p class="small">Check orientation, page order and readability. A matching file size does not guarantee acceptance. This is an image-based PDF without searchable text.</p><iframe class="result-preview" id="pdf-preview" title="Generated PDF preview" hidden></iframe></section>
- <section class="help"><h2>Prepare your documents in three steps</h2><div class="help-grid"><div><h3>01 / Start with clear photos</h3><p>Capture the whole page and avoid glare. This tool accepts photos, not existing PDFs, Word documents or signed forms.</p></div><div><h3>02 / Arrange, rotate and crop</h3><p>Move pages into order and rotate sideways photos. Cropping removes only the edges you choose.</p></div><div><h3>03 / Check before submitting</h3><p>Zoom in to check small text. If the limit is tight, fewer pages may preserve readability better than more compression.</p></div></div></section>
- <section class="help"><details><summary>Can I compress an existing PDF here?</summary><p>No. This tool turns photos into a PDF. Existing PDFs, Word documents, fillable forms and digital signatures have structures this tool does not preserve. Use the original document when searchable text or signed forms are required.</p></details><details><summary>What if my photos or the final PDF are too large?</summary><p>Each photo can be up to 20 MB, with 80 MB in total. Resize very high-resolution photos first. If the PDF is still too large at the lowest quality setting, processing stops. Remove unnecessary pages, crop unused edges, or split the submission if permitted. Pages are never silently dropped.</p></details><details><summary>Privacy and free use</summary><p>No account or ads. Photos, filenames and PDF content stay in your browser and are not saved in long-term storage. If you allow optional Google Analytics, Google receives usage events and normal connection information, but no document content. Cloudflare hosts the site. HEIC decoding code loads from this site when needed.</p></details></section>
-</main><footer><span>NoCloudFiles · Your content stays on your device</span><div class="footer-links"><a href="/about-en.html">About and testing</a><a href="/third-party-notices.txt">Open-source components</a></div></footer>
-<dialog id="crop-dialog" aria-labelledby="crop-title"><h2 id="crop-title">Crop photo edges</h2><p class="small">Check the preview to keep all text. Edges refer to the original photo orientation.</p><canvas id="crop-preview"></canvas><div id="crop-inputs"></div><div class="actions"><button id="crop-reset">Reset crop</button><button id="crop-cancel">Cancel</button><button class="primary" id="crop-save">Save crop</button></div></dialog>
-<dialog id="feedback-dialog" aria-labelledby="feedback-title"><h2 id="feedback-title">Did this help?</h2><p class="small">You can copy these notes to the person who shared this tool. Do not include private documents. These notes are never transmitted.</p><fieldset><legend>Optional: how did it go?</legend><p class="small">Only these categories are sent, and only if you allowed analytics.</p><div class="actions"><button data-feedback="helped">It helped</button><button data-feedback="unclear">Text is unclear</button><button data-feedback="not_accepted">Upload was rejected</button><button data-feedback="other">Another problem</button></div></fieldset><textarea class="feedback" id="feedback-text" aria-label="Trial feedback">My task:
+<html lang="en" data-tool="photos_to_pdf">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f5f3ed" />
+    <title>Photos to PDF Under 1 MB — NoCloudFiles</title>
+    <meta name="description" content="Combine photos into a PDF under your upload size limit. Free JPG, PNG and HEIC conversion, sorting, rotation and cropping in your browser. No sign-up." />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="canonical" href="https://nocloudfiles.com/photos-to-pdf/" />
+    <link rel="alternate" hreflang="en" href="https://nocloudfiles.com/photos-to-pdf/" />
+    <link rel="alternate" hreflang="zh-Hans" href="https://nocloudfiles.com/zh/photos-to-pdf/" />
+    <link rel="alternate" hreflang="x-default" href="https://nocloudfiles.com/photos-to-pdf/" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/"><img src="/favicon.svg" alt="" width="26" height="26" />NoCloudFiles</a>
+      <span class="header-note">Free · No sign-up</span>
+      <a class="language-switch" href="/zh/photos-to-pdf/" lang="zh-CN" hreflang="zh-CN"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z"/></svg><span>中文</span></a>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">Photos to PDF · Ready to upload</p>
+        <h1>Your photos.<br /><span class="accent">One PDF that fits.</span></h1>
+        <p class="lead">Combine document photos into a PDF under 1 MB, 2 MB or your chosen limit. Reorder, rotate and crop before downloading.</p>
+      </section>
+      <dl class="brief">
+        <div><dt>You need</dt><dd>JPG, PNG, WebP or HEIC photos, up to 20</dd></div>
+        <div><dt>You get</dt><dd>One PDF under the size limit you choose, one photo per page</dd></div>
+        <div><dt>Where files go</dt><dd>Processed in this browser only. Nothing is uploaded; closing the page clears it.</dd></div>
+      </dl>
+      <div class="workspace">
+        <section class="panel">
+          <div class="panel-title"><span class="step">1</span><h2>Add your document photos</h2></div>
+          <div class="dropzone" id="drop">
+            <svg class="dropzone-icon" aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <strong>Drop your photos here</strong>
+            <p class="small">Or choose images from your phone or computer</p>
+            <div class="actions">
+              <button class="primary" id="choose">Choose photos</button>
+              <button class="text-button" id="example">Try an example</button>
+            </div>
+            <p class="small">JPG / PNG / WebP / HEIC · Up to 20 photos</p>
+            <input hidden id="files" type="file" aria-label="Choose photos" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple />
+          </div>
+          <div class="notice error" id="error" role="alert" hidden></div>
+          <div id="session" hidden>
+            <div class="session-row"><strong id="count"></strong><button class="text-button" id="clear">Clear photos</button></div>
+            <p class="small">One photo per page, in the order shown.</p>
+            <div class="photos" id="photos"></div>
+          </div>
+          <div class="local-note"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div><strong>Your photos stay on your device</strong><p>Photos are processed locally. Originals stay unchanged. Closing the page clears your work.</p></div></div>
+        </section>
+        <aside class="panel side">
+          <div class="panel-title"><span class="step">2</span><h2>Set the upload limit</h2></div>
+          <div class="field">
+            <label for="limit">Maximum file size</label>
+            <select id="limit">
+              <option value="500000">500 KB or less</option>
+              <option value="1000000" selected>1 MB or less</option>
+              <option value="2000000">2 MB or less</option>
+              <option value="5000000">5 MB or less</option>
+              <option value="10000000">10 MB or less</option>
+            </select>
+            <p class="small">Use the limit shown on your upload website. 1 MB = 1,000,000 bytes.</p>
+          </div>
+          <div class="field">
+            <label for="filename">Download filename</label>
+            <input id="filename" type="text" maxlength="60" value="prepared-documents" autocomplete="off" />
+            <p class="small">Saved as a .pdf file</p>
+          </div>
+          <button class="primary" id="generate" disabled>Create PDF</button>
+          <div class="progress" id="progress" role="status" aria-live="polite" hidden>
+            <span id="progress-text"></span><progress id="bar" max="1"></progress>
+            <button class="text-button" id="cancel">Cancel processing</button>
+          </div>
+          <hr />
+          <ul class="micro-list">
+            <li>Whole images fitted onto A4 pages</li>
+            <li>Checks the actual PDF file size</li>
+            <li>Check small text before submitting</li>
+          </ul>
+        </aside>
+      </div>
+      <section class="panel result" id="result" hidden aria-live="polite">
+        <div class="result-top">
+          <div class="panel-title"><span class="step">3</span><div><h2 id="result-title"></h2><p class="file-stats" id="stats"></p></div></div>
+          <a class="button download" id="download">Download PDF</a>
+        </div>
+        <p id="quality"></p>
+        <div class="actions">
+          <button id="preview">Preview PDF</button>
+          <button class="text-button" id="feedback-open">Did this help?</button>
+        </div>
+        <p class="small">Check orientation, page order and readability. A matching file size does not guarantee acceptance. This is an image-based PDF without searchable text.</p>
+        <iframe class="result-preview" id="pdf-preview" title="Generated PDF preview" hidden></iframe>
+      </section>
+      <section class="section">
+        <h2>Prepare your documents in three steps</h2>
+        <div class="steps-grid">
+          <div>
+            <h3><span class="mono">01</span>Start with clear photos</h3>
+            <p>Capture the whole page and avoid glare. This tool accepts photos, not existing PDFs, Word documents or signed forms.</p>
+          </div>
+          <div>
+            <h3><span class="mono">02</span>Arrange, rotate and crop</h3>
+            <p>Move pages into order and rotate sideways photos. Cropping removes only the edges you choose.</p>
+          </div>
+          <div>
+            <h3><span class="mono">03</span>Check before submitting</h3>
+            <p>Zoom in to check small text. If the limit is tight, fewer pages may preserve readability better than more compression.</p>
+          </div>
+        </div>
+      </section>
+      <section class="section scope">
+        <h2>What this tool can and cannot do</h2>
+        <div class="scope-grid">
+          <div class="scope-does">
+            <h3>What it does</h3>
+            <ul>
+            <li>Puts each photo on its own A4 page, whole and in proportion.</li>
+            <li>Checks the actual PDF size against the limit you choose.</li>
+            <li>Lets you reorder, rotate and crop the edges you choose.</li>
+            <li>Stops with a clear message instead of silently dropping pages.</li>
+            </ul>
+          </div>
+          <div class="scope-not">
+            <h3>What it does not do</h3>
+            <ul>
+            <li>Compress or convert existing PDFs, Word files or signed forms.</li>
+            <li>Create searchable text. The PDF is image-based.</li>
+            <li>Guarantee that a website accepts the file.</li>
+            <li>Keep Live Photo video. HEIC uses the still image only.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section class="section faq">
+        <h2>Questions</h2>
+        <details><summary>Can I compress an existing PDF here?</summary><p>No. This tool turns photos into a PDF. Existing PDFs, Word documents, fillable forms and digital signatures have structures this tool does not preserve. Use the original document when searchable text or signed forms are required.</p></details>
+        <details><summary>What if my photos or the final PDF are too large?</summary><p>Each photo can be up to 20 MB, with 80 MB in total. Resize very high-resolution photos first. If the PDF is still too large at the lowest quality setting, processing stops. Remove unnecessary pages, crop unused edges, or split the submission if permitted. Pages are never silently dropped.</p></details>
+        <details><summary>Privacy and free use</summary><p>No account or ads. Photos, filenames and PDF content stay in your browser and are not saved in long-term storage. If you allow optional Google Analytics, Google receives usage events and normal connection information, but no document content. Cloudflare hosts the site. HEIC decoding code loads from this site when needed.</p></details>
+      </section>
+      <section class="section more-tools">
+        <h2>Other tools</h2>
+      <div class="task-index">
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4 4 3 3-2 4 3"/></svg>Photos</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/photo-privacy/" data-tool="photo_privacy"><span class="task-need">You are about to share a phone photo</span><span class="task-get">See and remove its location, capture time and device details</span><span class="task-meta">Photo privacy check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M3 15h18M9 4v16"/></svg>A table or CSV</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/csv-check/" data-tool="csv_check"><span class="task-need">A spreadsheet import keeps failing</span><span class="task-get">Find quoting, column and encoding problems, then export a clean CSV</span><span class="task-meta">CSV check</span><span class="task-go" aria-hidden="true">→</span></a></li>
+            <li><a class="task-row" href="/schedule-to-calendar/" data-tool="schedule_to_calendar"><span class="task-need">You received a shift list or timetable</span><span class="task-get">Check each date, then add everything to your calendar</span><span class="task-meta">Schedule to calendar</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+        <div class="task-group">
+          <h3 class="task-have"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="3.2"/><path d="M3 19c.6-3 3-4.6 6-4.6s5.4 1.6 6 4.6M16 6.2a3 3 0 0 1 0 5.6M18 14.8c1.7.6 2.7 2 3 4.2"/></svg>A contacts backup</h3>
+          <ul class="task-list compact">
+            <li><a class="task-row" href="/vcf-select/" data-tool="vcf_select"><span class="task-need">You want to send a few contacts, not the whole address book</span><span class="task-get">Pick the people and details to share from a VCF file</span><span class="task-meta">Select contacts</span><span class="task-go" aria-hidden="true">→</span></a></li>
+          </ul>
+        </div>
+      </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>NoCloudFiles · Your content stays on your device</span>
+      <nav class="footer-links" aria-label="Site">
+        <a href="/about-en.html">Privacy and about</a>
+        <a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
+        <a href="/third-party-notices.txt">Open-source notices</a>
+      </nav>
+    </footer>
+    <dialog id="crop-dialog" aria-labelledby="crop-title">
+      <h2 id="crop-title">Crop photo edges</h2>
+      <p class="small">Check the preview to keep all text. Edges refer to the original photo orientation.</p>
+      <canvas id="crop-preview"></canvas>
+      <div id="crop-inputs"></div>
+      <div class="actions">
+        <button id="crop-reset">Reset crop</button>
+        <button id="crop-cancel">Cancel</button>
+        <button class="primary" id="crop-save">Save crop</button>
+      </div>
+    </dialog>
+    <dialog id="feedback-dialog" aria-labelledby="feedback-title">
+      <h2 id="feedback-title">Did this help?</h2>
+      <p class="small">You can copy these notes to the person who shared this tool. Do not include private documents. These notes are never transmitted.</p>
+      <fieldset>
+        <legend>Optional: how did it go?</legend>
+        <p class="small">Only these categories are sent, and only if you allowed analytics.</p>
+        <div class="actions">
+          <button data-feedback="helped">It helped</button>
+          <button data-feedback="unclear">Text is unclear</button>
+          <button data-feedback="not_accepted">Upload was rejected</button>
+          <button data-feedback="other">Another problem</button>
+        </div>
+      </fieldset>
+      <textarea class="feedback" id="feedback-text" aria-label="Trial feedback">My task:
 Where I was stuck:
 Did I finish? Yes / No
 Is the PDF readable? Yes / No
-Where I still need help:</textarea><div class="actions"><button id="feedback-close">Close</button><button class="primary" id="feedback-copy">Copy feedback notes</button></div><p role="status" id="feedback-status" class="small"></p></dialog>
-<noscript><p class="notice">Photo processing needs JavaScript. Please enable it and reopen this page.</p></noscript>
-</body></html>
+Where I still need help:</textarea>
+      <div class="actions">
+        <button id="feedback-close">Close</button>
+        <button class="primary" id="feedback-copy">Copy feedback notes</button>
+      </div>
+      <p role="status" id="feedback-status" class="small"></p>
+    </dialog>
+    <noscript><p class="notice">This tool needs JavaScript. Please enable it and reopen this page.</p></noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

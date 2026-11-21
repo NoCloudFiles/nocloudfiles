@@ -7,3 +7,4 @@ playwright-report/
 public/source.zip
 public/heic-to-source.tgz
 public/third-party-notices.txt
+.claude/session-checkpoints/
