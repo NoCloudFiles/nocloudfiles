@@ -1,0 +1,55 @@
+{
+  "checkedAt": "2026-11-21T04:22:28.401Z",
+  "beforeConsent": 0,
+  "errors": [],
+  "records": [
+    {
+      "status": 204,
+      "event": "page_view",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": null,
+      "page": "https://nocloudfiles.com/csv-check/"
+    },
+    {
+      "status": 204,
+      "event": "tool_start",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": "sample",
+      "page": "https://nocloudfiles.com/csv-check/"
+    },
+    {
+      "status": 204,
+      "event": "csv_check_start",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": "sample",
+      "page": "https://nocloudfiles.com/csv-check/"
+    },
+    {
+      "status": 204,
+      "event": "csv_checked",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": "sample",
+      "page": "https://nocloudfiles.com/csv-check/"
+    },
+    {
+      "status": 204,
+      "event": "csv_ready",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": "sample",
+      "page": "https://nocloudfiles.com/csv-check/"
+    },
+    {
+      "status": 204,
+      "event": "download_click",
+      "measurementId": "G-94L2V73P1G",
+      "tool": "csv_check",
+      "source": "sample",
+      "page": "https://nocloudfiles.com/csv-check/"
+    }
+  ]
+}

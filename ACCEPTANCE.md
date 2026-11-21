@@ -55,3 +55,22 @@ PNG/JPEG的尺寸可在解码前检查；HEIC/WebP的像素检查在解码后进
 英文桌面截图和合成示例 PDF 在 `validation/2026-11-21/`。发布源码包包含本次应用和测试；本节验收记录是在发布后写入本地仓库的。
 
 后续观察：以同意统计的 file 来源会话为群体，分别看开始生成、生成达标和下载点击；mixed 单独分析。结合负向反馈分类定位问题。不要将任何阶段等同于用户上传成功，也不要将拒绝统计的人当成放弃使用。真实用户成功数仍未知。
+
+## 2026-11-21：NoCloudFiles 工具站与 CSV
+
+用户确认域名 `nocloudfiles.com`。首发 Worker `nocloudfiles` 版本 `f846843b-4fcd-4248-b996-a516b82f2c66`；apex/www HTTPS 均 200，canonical 指向 apex。原 paper-ready Worker 和 MSP 未覆盖。
+
+- 新首页英文 `/`、中文 `/zh/`；照片工具 `/photos-to-pdf/`、CSV `/csv-check/`，均有中文对应路径。
+- 27 项 Node 测试、42 项本地 Chromium/WebKit-mobile 浏览器测试通过。独立 code-review 找到并修复四个问题，先复现后修复：超长粘贴被 maxlength 截断、末尾空记录干扰分隔符猜测、textarea 改写文件内 CR/CRLF、读取文件时修改选项丢弃读取。新增相应回归测试。最终独立复核未发现新增实质问题。
+- 实际文件处理在浏览器 Worker 内。CSV 超限/格式错误不导出部分数据；不能判断分隔符时要求手动选择；公式需显式保留或转文本。仅结构检查，不保证第三方业务导入，不恢复丢失数字。未编辑文件内换行保留，编辑文本框遵循浏览器的换行规范化。
+- 桌面与中文手机布局截图位于 `validation/nocloudfiles-2026-11-21/`。WebKit 仿真不等同于实机测试。
+- 原 Paper Ready GA 属性 `565307803` 改名 **NoCloudFiles**，数据流 `16385255213` 改名 **NoCloudFiles Web**，网址为 `https://nocloudfiles.com`；衡量 ID 仍为 `G-94L2V73P1G`。增强型衡量仍关闭，新增事件级自定义维度 Tool (`tool_id`) 已保存。保留原照片站历史，MSP 的 `G-1C1FEY4WBB` 独立。
+- 真实 Google 脚本线上检查 `live-probe.mjs` 通过：同意前请求 0，1 次 page_view，tool_start/csv_check_start/csv_checked/csv_ready/download_click 各一次。正确 ID、tool_id=csv_check、来源 sample；collect 均 204，没有合成私有查询/片段/CSV 内容，没有页面错误。证据为 `live-wire.json`，没有存储客户端标识符。
+- 原生 Chrome 使用合成示例，检查成功并点击下载；保存对话框取消，因此仅算下载意图。自动化另外实际保存 `example.csv` 并验证内容。
+- GA 后台实际收件：实时报告显示 CSV 页面访问，以及 csv_check_start、csv_checked、csv_ready、download_click 各 1；csv_checked → input_source → sample 计数 1，tool_id → csv_check 计数 1。不是只凭 204 判定成功。
+
+这些都是验收流量。统计需按工具、同意统计的会话、输入来源分组；排除 sample/mixed 和本次 QA 时间，不将 debug 当作已自动排除。文件/文字输入也不能证明真实客户任务，下载不等于导入成功。GSC 提交、搜索收录、真实用户受益与收入均尚未验证。原 `validation/2026-11-21/live-probe.mjs` 针对保留的旧照片站；新域名用新目录脚本。
+
+线上 Chromium/WebKit-mobile 12 项关键回归全部通过（2.3 分钟），包括两种语言、真实 PDF 下载、CSV 内容保持、异步读取、响应头与开源包可下载。
+
+最终发布版本 `c9cfd0a0-ec7b-4c17-9db6-6d7ac95098c3`：仅补充源码包中的方向评审与 README，重打包依赖分发归档；应用 JS/CSS/HTML 与上述线上验证版本一致。验收记录在发布后保存于仓库。

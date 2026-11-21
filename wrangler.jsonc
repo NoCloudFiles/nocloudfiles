@@ -1,5 +1,18 @@
 {
-  "name": "paper-ready",
+  "name": "nocloudfiles",
   "compatibility_date": "2026-11-16",
-  "assets": {"directory": "./dist", "not_found_handling": "404-page"}
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    {
+      "pattern": "nocloudfiles.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.nocloudfiles.com",
+      "custom_domain": true
+    }
+  ]
 }

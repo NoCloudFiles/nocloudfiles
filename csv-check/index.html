@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en" data-tool="csv_check">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CSV check and cleanup — NoCloudFiles</title>
+    <meta
+      name="description"
+      content="Check CSV quoting, columns and encoding locally. Preserve identifiers and export normalized UTF-8 CSV."
+    />
+    <link rel="canonical" href="https://nocloudfiles.com/csv-check/" />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nocloudfiles.com/csv-check/"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-Hans"
+      href="https://nocloudfiles.com/zh/csv-check/"
+    />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">NoCloudFiles</a><a href="/zh/csv-check/">中文</a
+      ><span>Free · No sign-up</span>
+    </header>
+    <main>
+      <section class="hero tool-intro">
+        <p>CSV / CHECK BEFORE YOU IMPORT</p>
+        <h1>Check and clean a CSV</h1>
+        <p>
+          Spot format problems before importing a spreadsheet. Normalize a
+          readable CSV to UTF-8, comma separators and consistent quoting. Your
+          data stays in this browser.
+        </p>
+      </section>
+      <div class="csv-layout">
+        <section class="panel">
+          <h2>1. Add your CSV</h2>
+          <label for="csv-file">Choose a CSV file (up to 2 MB)</label
+          ><input
+            id="csv-file"
+            type="file"
+            accept=".csv,.tsv,.txt,text/csv,text/plain"
+          /><label for="csv-input">Or paste CSV text</label
+          ><textarea
+            id="csv-input"
+            spellcheck="false"
+            autocomplete="off"
+            placeholder="sku;amount&#10;00123;12.50"
+          ></textarea>
+          <div class="actions">
+            <button id="csv-example">Try an example</button
+            ><button id="csv-clear">Clear input</button>
+          </div>
+          <p class="small">
+            Up to 20,000 records and 200 columns. No autosave. Original files
+            are never overwritten.
+          </p>
+        </section>
+        <aside class="panel">
+          <h2>2. Check the format</h2>
+          <label for="csv-encoding">File encoding</label
+          ><select id="csv-encoding">
+            <option value="auto">UTF-8 / UTF-16 BOM detection</option>
+            <option value="utf-8">UTF-8</option>
+            <option value="utf-16le">UTF-16 LE</option>
+            <option value="utf-16be">UTF-16 BE</option>
+            <option value="windows-1252">Windows-1252</option>
+            <option value="gb18030">GB18030</option>
+            <option value="big5">Big5</option></select
+          ><label for="csv-delimiter">Input separator</label
+          ><select id="csv-delimiter">
+            <option value="">Detect from content</option>
+            <option value=",">Comma</option>
+            <option value=";">Semicolon</option>
+            <option value="&#9;">Tab</option>
+            <option value="|">|</option></select
+          ><label for="csv-formula">Formula-like cells</label
+          ><select id="csv-formula">
+            <option value="ask">Require a choice if found</option>
+            <option value="escape">
+              Prefix an apostrophe (changes values)
+            </option>
+            <option value="preserve">
+              Preserve exactly (formulas may run)
+            </option></select
+          ><button class="primary" id="csv-check">Check CSV</button
+          ><button id="csv-cancel" hidden>Cancel check</button>
+        </aside>
+      </div>
+      <p id="csv-error" class="error" role="alert" hidden></p>
+      <section
+        id="csv-result"
+        class="panel csv-result"
+        hidden
+        aria-live="polite"
+      >
+        <h2 id="csv-summary"></h2>
+        <ul id="csv-issues"></ul>
+        <p class="small">
+          Preview: first 20 records and 10 columns; long cells shortened here
+          only. Export includes all checked records.
+        </p>
+        <div class="csv-scroll">
+          <table>
+            <tbody id="csv-preview"></tbody>
+          </table>
+        </div>
+        <p>
+          <a class="download" id="csv-download" download="cleaned.csv" hidden
+            >Download cleaned CSV</a
+          >
+        </p>
+        <p class="small">
+          Output: UTF-8 with BOM, comma separators, CRLF line endings and quoted
+          cells. Import identifier columns as Text in Excel; quoting alone does
+          not prevent Excel changing them.
+        </p>
+      </section>
+      <section class="tool-intro">
+        <h2>What this check can and cannot fix</h2>
+        <p>
+          This checks CSV structure, not Shopify, Stripe or accounting business
+          rules. Broken quotes and inconsistent column counts must be corrected
+          before export. Dates, decimals, spaces and identifiers are preserved.
+          Missing leading zeros and rounded digits cannot be reconstructed.
+        </p>
+        <p>
+          For platform requirements, consult
+          <a
+            href="https://help.shopify.com/en/manual/products/import-export/import-products"
+            rel="noreferrer"
+            >Shopify CSV import guidance</a
+          >.
+        </p>
+      </section>
+    </main>
+    <footer>
+      <span>NoCloudFiles · Your content stays on your device</span>
+      <div class="footer-links">
+        <a href="/about-en.html">Privacy and about</a
+        ><a href="/source.zip">Source code</a>
+      </div>
+    </footer>
+    <script type="module" src="/src/csv-ui.js"></script>
+  </body>
+</html>

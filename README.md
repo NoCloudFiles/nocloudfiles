@@ -1,6 +1,8 @@
-# 纸张就绪 / Paper Ready
+# NoCloudFiles
 
-把手机拍的多页材料整理为一份符合上传大小限制的 PDF。免费、无需账户，照片仅在浏览器处理。研究日期 2026-11-16。
+浏览器本地工具站：https://nocloudfiles.com 。英文首页 `/`，中文 `/zh/`。现有工具：`/photos-to-pdf/` 照片转 PDF、`/csv-check/` CSV 检查清理；中文工具有 `/zh/` 前缀。文件及粘贴内容只在浏览器处理。方向和证据见 [DIRECTION-REVIEW.md](DIRECTION-REVIEW.md)。
+
+CSV 限制：2 MB、20,000 条记录（含首行）、200 列。严格解码、分隔符识别、引号/列数检查、公式显式选择；导出 UTF-8 BOM、逗号分隔 CSV。保留字符串，不恢复丢失的前导零或精度，不猜日期，不保证平台导入。上传文件的原始换行保留至用户编辑文本框；编辑后以文本框显示内容为准。以下照片工具研究最初于 2026-11-16 完成。
 
 ## 问题依据和选择
 
@@ -37,25 +39,27 @@ wrangler deploy
 
 ## 成本与真实用户验证
 
-没有按次模型调用、存储或数据库，处理成本由用户设备承担；网页静态托管仍受Cloudflare账户的实际配额和政策约束。不购买域名、不投广告、不收款。本轮模型/研发调用费用未知，不能声称总投入为零。
+没有按次模型调用、存储或数据库，处理成本由用户设备承担；网页静态托管仍受Cloudflare账户的实际配额和政策约束。域名由用户注册；当前不投广告、不收款。本轮模型/研发调用费用未知，不能声称总投入为零。
 
 上线与自动测试只证明可用，不证明真实帮助成立。试用时记录：用户原来要完成什么、是否独立完成、实际文件是否满足上传约束、是否清晰、是否仍需人工帮助。不要提交或收集原材料。首页提供可复制的无文件反馈模板，用户自行决定是否分享。三个独立任务是初始人工验收目标，不是统计显著性；当前真实用户成功数未知。
 
 ## 发布
 
-已发布：https://paper-ready.1986liubo.workers.dev
+已发布：https://nocloudfiles.com
 
-独立Cloudflare Worker静态资源项目，不覆盖MSP站点。本地仓库的发布记录和最终验证结果见 `ACCEPTANCE.md`；公开源码包包含应用、测试及部署配置。
+原照片站 https://paper-ready.1986liubo.workers.dev 保留，未覆盖。
+
+独立 Cloudflare Worker `nocloudfiles` 静态资源项目，apex 与 www 绑定同一构建，不覆盖 MSP 或旧 paper-ready Worker。本地仓库的发布记录和最终验证结果见 `ACCEPTANCE.md`；公开源码包包含应用、测试及部署配置。
 
 ## Languages and measurement (2026-11-21)
 
-English is the default at `/`; simplified Chinese is at `/zh/`. Each has a canonical URL and reciprocal language links. `robots.txt` and a two-route sitemap are included. This does not establish Google indexing or search demand; no platform-specific landing-page matrix was created.
+English is the default at `/`; simplified Chinese is at `/zh/`. Each has a canonical URL and reciprocal language links. `robots.txt` and a six-route sitemap are included. This does not establish Google indexing or search demand; no platform-specific landing-page matrix was created.
 
-GA4 property `565307803`, stream `16385255213`, measurement ID `G-94L2V73P1G`. Public configuration is in `public/analytics-config.json`; it is not a credential. Enhanced measurement is disabled in GA. Event-scoped dimensions: `input_source`, `interface_language`, `error_code`, `feedback_result`.
+GA4 property `565307803`, stream `16385255213`, measurement ID `G-94L2V73P1G`. Public configuration is in `public/analytics-config.json`; it is not a credential. Enhanced measurement is disabled in GA. Event-scoped dimensions: `input_source`, `interface_language`, `error_code`, `feedback_result`; new `tool_id` identifies `home`, `photos_to_pdf`, `csv_check`. GA admin configuration and receipt status are recorded in ACCEPTANCE.md. MSP uses G-1C1FEY4WBB, a different property.
 
 No GA script or event is sent until explicit consent. Consent is the only localStorage value introduced. Declining or blocking analytics never blocks processing. Settings allow withdrawal; subsequent custom events stop and host GA cookies are expired. Google and Cloudflare still process normal connection information; do not describe analytics as anonymous or zero-risk.
 
-Events: `tool_start` (first photos added to an empty session), `photos_added`, `generate_start`, `pdf_ready` (actual output fits the byte limit), `generate_error`, `generate_cancel`, `download_click` (once per generated output), `feedback_response` (one fixed category per output). All task events carry `input_source=sample|file|mixed` and `interface_language=en|zh`. No filenames, material contents, raw exception messages or free-text feedback are sent. Page location excludes query/fragment; referrer retains origin only. The source classification describes how input was selected, not proof that a file is a real customer task.
+Events: `tool_start` (first photos added to an empty session), `photos_added`, `generate_start`, `pdf_ready` (actual output fits the byte limit), `generate_error`, `generate_cancel`, `download_click` (once per generated output), `feedback_response` (one fixed category per output). CSV events: `tool_start` and `csv_check_start` per explicit check attempt, `csv_checked` for a structurally valid result (formula choice may still block export), `csv_ready` when an export is available, `download_click` once per output, and bounded error/cancel events. CSV `input_source=file` covers selected files and pasted user text, `sample` is the built-in example, `mixed` is an edited example. Page views and task events carry bounded `tool_id`. All task events carry `input_source=sample|file|mixed` and `interface_language=en|zh`. No filenames, material contents, raw exception messages or free-text feedback are sent. Page location excludes query/fragment; referrer retains origin only. The source classification describes how input was selected, not proof that a file is a real customer task.
 
 Observation: inspect weekly cohorts with `input_source=file`, keep `mixed` separate and exclude `sample`. Compare sessions that reached `generate_start` with sessions that reached `pdf_ready` and `download_click`; do not divide raw event totals or sum repeated attempts as people. Count fixed negative feedback categories and errors to guide fixes. Consent can occur mid-task, no pre-consent events are replayed, and blockers suppress events, so the measured cohort is incomplete and selection-biased. Download clicks do not prove a file was saved or accepted by another website. Actual usefulness remains unproven without real task evidence.
 

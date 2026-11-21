@@ -1,7 +1,7 @@
 import {holdEncoding,releaseEncoding} from './hold-encoding.js';
 import {test,expect} from '@playwright/test';
 test('English is the default and Chinese is an explicit alternative',async({page})=>{
- await page.goto('/');await expect(page.locator('html')).toHaveAttribute('lang','en');
+ await page.goto('/photos-to-pdf/');await expect(page.locator('html')).toHaveAttribute('lang','en');
  await page.getByRole('button',{name:'Try an example',exact:true}).click();
  await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();
@@ -15,7 +15,7 @@ test('consent gates analytics; sample and file events remain separate and privat
  const external=[];page.on('request',r=>{if(/google(tagmanager|-analytics)/.test(r.url()))external.push(r.url());});
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:'window.__tagLoaded=true;'}));
- await page.goto('/');await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();expect(external).toEqual([]);
+ await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();expect(external).toEqual([]);
  await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
  await expect.poll(()=>page.evaluate(()=>window.__tagLoaded)).toBe(true);
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
@@ -35,13 +35,13 @@ test('consent gates analytics; sample and file events remain separate and privat
 test('blocked analytics never blocks the photo workflow',async({page})=>{
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.abort());
- await page.goto('/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();await page.getByRole('button',{name:'Try an example',exact:true}).click();
+ await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();await page.getByRole('button',{name:'Try an example',exact:true}).click();
  await page.getByRole('button',{name:'Create PDF',exact:true}).click();await expect(page.getByRole('link',{name:'Download PDF',exact:true})).toBeVisible();
 });
 test('mixed sources, bounded feedback and cancellation have distinct events',async({page})=>{
  await page.route('**/analytics-config.json',r=>r.fulfill({json:{measurementId:'G-TEST1234'}}));
  await page.route('https://www.googletagmanager.com/**',r=>r.fulfill({contentType:'text/javascript',body:''}));
- await page.goto('/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
+ await page.goto('/photos-to-pdf/');await page.getByRole('button',{name:'Allow analytics',exact:true}).click();
  await page.getByRole('button',{name:'Try an example',exact:true}).click();await expect(page.getByText('3 pages',{exact:true})).toBeVisible();
  await page.getByLabel('Choose photos',{exact:true}).setInputFiles('tests/fixtures/synthetic.png');await expect(page.getByText('4 pages',{exact:true})).toBeVisible();
  await holdEncoding(page);await page.getByRole('button',{name:'Create PDF',exact:true}).click();await page.getByRole('button',{name:'Cancel processing',exact:true}).click();await releaseEncoding(page);
@@ -53,5 +53,5 @@ test('mixed sources, bounded feedback and cancellation have distinct events',asy
  await page.getByRole('button',{name:'It helped',exact:true}).click();await expect(page.locator('#feedback-status')).toContainText('Thank you');
  events=await page.evaluate(()=>window.dataLayer.filter(x=>x[0]==='event').map(x=>[x[1],x[2]]));
  expect(events.filter(x=>x[0]==='pdf_ready').at(-1)[1].input_source).toBe('mixed');
- expect(events.filter(x=>x[0]==='feedback_response')).toEqual([['feedback_response',{input_source:'mixed',feedback_result:'helped',interface_language:'en'}]]);
+ expect(events.filter(x=>x[0]==='feedback_response')).toEqual([['feedback_response',{input_source:'mixed',feedback_result:'helped',tool_id:'photos_to_pdf',interface_language:'en'}]]);
 });

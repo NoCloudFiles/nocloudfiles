@@ -1,10 +1,10 @@
-const events=new Set(['tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
-const values={input_source:['sample','file','mixed'],interface_language:['en','zh'],error_code:['input_rejected','decode_failed','too_large','generation_failed'],feedback_result:['helped','unclear','too_large','not_accepted','other']};
+const events=new Set(['csv_check_start','csv_checked','csv_ready','tool_start','photos_added','generate_start','pdf_ready','generate_error','generate_cancel','download_click','feedback_response']);
+const values={tool_id:['home','photos_to_pdf','csv_check'],input_source:['sample','file','mixed'],interface_language:['en','zh'],error_code:['input_rejected','decode_failed','too_large','generation_failed'],feedback_result:['helped','unclear','too_large','not_accepted','other']};
 export function safeEvent(name,params={}){
  if(!events.has(name))return null;
  return Object.fromEntries(Object.entries(params).filter(([k,v])=>values[k]?.includes(v)));
 }
-export function createAnalytics({measurementId='',language='en',location='',referrer='',getChoice=()=>null,saveChoice=()=>{},send=()=>{},load=()=>{},disable=()=>{},debug=false}={}){
+export function createAnalytics({measurementId='',toolId='',language='en',location='',referrer='',getChoice=()=>null,saveChoice=()=>{},send=()=>{},load=()=>{},disable=()=>{},debug=false}={}){
  const valid=/^G-[A-Z0-9]+$/.test(measurementId);let choice=null,initialized=false,pageSent=false;
  const attempt=fn=>{try{return fn();}catch{return undefined;}};
  const command=(...args)=>attempt(()=>send(...args));
@@ -22,7 +22,7 @@ export function createAnalytics({measurementId='',language='en',location='',refe
    command('config',measurementId,defaults);
    attempt(()=>load(measurementId));
   }else command('consent','update',{analytics_storage:'granted'});
-  if(!pageSent){pageSent=true;command('event','page_view',{interface_language:language,...(debug?{debug_mode:true}: {})});}
+  if(!pageSent){pageSent=true;command('event','page_view',{interface_language:language,...(values.tool_id.includes(toolId)?{tool_id:toolId}:{}),...(debug?{debug_mode:true}: {})});}
  }
  function consent(allowed){
   const next=allowed?'granted':'denied';if(choice===next)return;choice=next;attempt(()=>saveChoice(choice));

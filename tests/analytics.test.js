@@ -32,3 +32,12 @@ test('debug probes explicitly tag both page views and task events',()=>{
  const sent=[];const a=createAnalytics({measurementId:'G-TEST1234',debug:true,send:(...args)=>sent.push(args)});a.consent(true);a.event('pdf_ready',{input_source:'sample'});
  assert.ok(sent.filter(x=>x[0]==='event').every(x=>x[2].debug_mode===true));
 });
+test('toolbox events only accept known tool identifiers',()=>{assert.deepEqual(safeEvent('csv_checked',{tool_id:'csv_check',input_source:'sample',csv:'secret'}),{tool_id:'csv_check',input_source:'sample'});assert.deepEqual(safeEvent('csv_checked',{tool_id:'secret-file'}),{});});
+
+test('page views identify only a bounded tool name',()=>{
+ for(const toolId of ['csv_check','home','private-filename']){
+ const sent=[];const a=createAnalytics({measurementId:'G-TEST1234',toolId,send:(...x)=>sent.push(x)});a.consent(true);
+ const page=sent.find(x=>x[0]==='event'&&x[1]==='page_view')[2];
+ assert.equal(page.tool_id,toolId==='private-filename'?undefined:toolId);
+ }
+});

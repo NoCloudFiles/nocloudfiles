@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "heic-to": "1.4.2",
+    "papaparse": "5.7.1",
     "pdf-lib": "1.17.1"
   },
   "devDependencies": {
