@@ -70,3 +70,11 @@ Verification uses synthetic samples and `?analytics_debug=1` for debug tagging. 
 英文入口 `/photo-privacy/`，中文入口 `/zh/photo-privacy/`。原件在本地解析；JPEG、HEIC/HEIF（支持的 HEVC 静态主图）最多 32 MB、5000 万像素。预览识别出的原始字段，分享副本按用户选择重新写入 XMP，默认无可选字段。厂商数据和缩略图不复制。部分专用字段只能查看。动态照片输出单张静态 JPEG；配对视频不处理。HDR 副本使用标准亮度，原件保留。画面中可见的地址或人脸仍在画面内。
 
 生产漏斗在 NoCloudFiles GA4 中按 `tool_id=photo_privacy`、语言及观察窗口筛选。依次记录选文件、解析及预览成功、生成且重读副本、点击下载（tool_start / photo_inspected / photo_ready / download_click）。用触发对应阶段的会话数除以开始会话数，另列 input_rejected 和 generation_failed。仅覆盖同意统计的使用者，排除验收时段。文件名、原始字段、选择和替换值都不传入事件。
+
+## 排班转日历与通讯录筛选
+
+`/schedule-to-calendar/` 和 `/vcf-select/` 均有 `/zh/` 中文入口。排班表支持粘贴 Excel 或本地 CSV/TSV。首行是表头，一行一个事件；日期与时间分列，或把时间段放在一列。日期有歧义时手选顺序，核对跨日预览后导出浮动本地时间 ICS 和 Google 英文表头 CSV。建议在新建的独立日历试导，核对事件数和时区。Google 官方支持电脑网页导入。手机系统直接打开多事件文件的表现取决于设备和应用。
+
+通讯录在浏览器 Worker 中读取，支持 30 MiB 内的 vCard 2.1/3.0/4.0。选择联系人及其具体电话、邮箱等字段后，重新构造 UTF-8 vCard 3.0；姓名总是包含，头像和扩展字段会丢弃。最终纯文本预览与下载来自相同字符串。支持 2.1 的 Quoted-Printable 软折行与声明的字符集。无法完整解析时显示错误。
+
+统计沿用 NoCloudFiles 的可选 GA。按工具、界面语言、来源与时间窗口，报告开始任务、生成下载文件、点击下载的会话数与各阶段占开始会话的比例。tool_start 在解析请求时触发，schedule_ready 和 contacts_ready 只在生成成功时触发。排除 sample、mixed 和验收时段。统计不含行、字段、日期、姓名、文件名及搜索词。

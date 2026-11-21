@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-tool="schedule_to_calendar">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Schedule to calendar — NoCloudFiles</title>
+    <meta
+      name="description"
+      content="Paste a shift list, exam timetable or match schedule. Check each date before saving it to your calendar."
+    />
+    <link
+      rel="canonical"
+      href="https://nocloudfiles.com/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="en"
+      href="https://nocloudfiles.com/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="zh-Hans"
+      href="https://nocloudfiles.com/zh/schedule-to-calendar/"
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href="https://nocloudfiles.com/schedule-to-calendar/"
+    />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">NoCloudFiles</a>
+      <span class="header-note">Free · No sign-up</span>
+      <a
+        class="language-switch"
+        href="/zh/schedule-to-calendar/"
+        lang="zh-CN"
+        hreflang="zh-CN"
+        ><svg
+          aria-hidden="true"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3a18 18 0 0 1 0 18 18 18 0 0 1 0-18Z" /></svg
+        ><span>中文</span></a
+      >
+    </header>
+    <main class="import-tool">
+      <section class="hero tool-intro">
+        <h1>Schedule to calendar</h1>
+        <p>
+          Paste a shift list, exam timetable or match schedule. Check each date
+          before saving it to your calendar.
+        </p>
+      </section>
+      <section class="tool-card">
+        <label for="table">Paste your table, including column headers</label
+        ><textarea id="table" spellcheck="false"></textarea>
+        <label for="file">Or open CSV / TSV (2 MB)</label
+        ><input type="file" id="file" accept=".csv,.tsv,.txt" /><button
+          id="sample"
+        >
+          Try a sample</button
+        ><button id="map">Choose columns</button>
+        <section id="mapping" hidden>
+          <h2>Match your columns</h2>
+          <div id="columns"></div>
+          <label
+            >Slash dates<select id="order">
+              <option value="">Choose for dates like 03/04/2027</option>
+              <option value="mdy">MM/DD/YYYY</option>
+              <option value="dmy">DD/MM/YYYY</option>
+            </select></label
+          >
+          <p>
+            Times follow the local clock of the destination calendar. A blank
+            time means an all-day event.
+          </p>
+          <button id="review">Preview events</button>
+        </section>
+        <p role="status" id="status"></p>
+        <pre id="preview"></pre>
+        <aside id="guide" hidden>
+          <p>
+            Import into a new calendar named Schedule. Check the event count and
+            local times there. If needed, remove that calendar to undo the whole
+            batch.
+          </p>
+          <p>
+            iPhone: open the ICS and check how many events are offered. If you
+            only see a preview, import it in Calendar on your Mac and sync via
+            iCloud. Android: on a computer, open Google Calendar → Settings →
+            Import & export, then sync the chosen calendar on your phone.
+          </p>
+        </aside>
+        <div id="links"></div>
+      </section>
+    </main>
+    <footer>
+      <span>NoCloudFiles · Your content stays on your device</span>
+      <div class="footer-links">
+        <a href="/about-en.html">Privacy and about</a
+        ><a href="https://github.com/NoCloudFiles/nocloudfiles">Source code</a>
+      </div>
+    </footer>
+    <script type="module" src="/src/schedule-ui.js"></script>
+  </body>
+</html>
