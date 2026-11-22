@@ -305,3 +305,12 @@ test("every sample button uses one label per language", () => {
       assert.equal(m[1], zh ? "试用示例" : "Try a sample", p);
   }
 });
+
+test("both About pages link to the public repository and the release source archive", () => {
+  for (const page of ["public/about.html", "public/about-en.html"]) {
+    const markup = readFileSync(page, "utf8");
+    for (const href of ["https://github.com/NoCloudFiles/nocloudfiles", "/source.zip"]) {
+      assert.ok(markup.includes('href="' + href + '"'), page + " is missing " + href);
+    }
+  }
+});
