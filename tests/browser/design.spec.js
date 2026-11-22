@@ -307,13 +307,13 @@ test("the brief's help link opens the collapsed instructions", async ({ page }) 
   }
 });
 
-// DESIGN.md "Widths": below the intro, every block on a page ends at the same right edge.
+// DESIGN.md "Widths": including the intro, every block on a page ends at the same right edge.
 test("blocks on each page share one right edge at desktop width", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const path of pages) {
     await page.goto(path);
     const { edges, widths } = await page.evaluate(() => {
-      const blocks = [...document.querySelectorAll("main > :not(.intro)")].filter(
+      const blocks = [...document.querySelectorAll("main > *, .intro h1, .intro .lead")].filter(
         (e) => e.getBoundingClientRect().width > 0,
       );
       return {

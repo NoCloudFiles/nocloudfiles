@@ -268,7 +268,7 @@ test("package-source.py includes DESIGN.md and every top-level tool directory fr
 // Layout: one content width per page (DESIGN.md "Widths").
 test("every page uses the one full content width", () => {
   for (const [p, s] of Object.entries(html)) assert.match(s, /\n    <main>\n/, `${p}: <main> takes no width class`);
-  assert.match(css, /main > :not\(\.intro\)\s*{\s*max-width: var\(--column\);/);
+  assert.match(css, /main > \*\s*{\s*max-width: var\(--page-max\);/);
   for (const block of [".brief", ".more-tools", ".privacy-layout", ".import-layout"]) {
     const rule = css.match(new RegExp(`\\n${block.replace(".", "\\.")} {([^}]*)}`));
     assert.ok(!rule || !/max-width/.test(rule[1]), `${block} must not set its own max-width`);

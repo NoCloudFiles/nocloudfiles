@@ -175,17 +175,14 @@ samp,
 
 /* ---------- Page frame ---------- */
 main {
-  /* One content width per page: every block below the intro shares this right edge. */
-  --column: var(--page-max);
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
   padding: 0 var(--gutter) 24px;
 }
-main > :not(.intro) {
-  max-width: var(--column);
+main > * {
+  max-width: var(--page-max);
 }
 .intro {
-  max-width: 760px;
   margin: 48px 0 32px;
 }
 .eyebrow {
