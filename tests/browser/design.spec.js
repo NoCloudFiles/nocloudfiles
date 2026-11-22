@@ -336,3 +336,21 @@ test("the home lead fits on one line at desktop width", async ({ page }) => {
     expect(lines, path).toBe(1);
   }
 });
+
+for (const width of [1440, 768, 390]) {
+  test("page headings follow the shared content width at " + width, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of [...pages, "/about.html", "/about-en.html"]) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      const heading = page.locator("main h1");
+      await expect(heading).toBeVisible();
+      const { left, right, viewport, overflow } = await heading.evaluate((element) => {
+        const { left, right } = element.getBoundingClientRect();
+        const { clientWidth: viewport, scrollWidth } = document.documentElement;
+        return { left, right, viewport, overflow: scrollWidth - viewport };
+      });
+      const margin = Math.max(width <= 760 ? 16 : 24, (viewport - 1136) / 2);
+      expect([left, right, overflow], path + " at " + width).toEqual([margin, viewport - margin, 0]);
+    }
+  });
+}

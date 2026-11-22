@@ -1,5 +1,7 @@
 /* Static info pages (not processed by Vite). Token values mirror src/style.css; see DESIGN.md. */
 :root {
+  --page-max: 1136px;
+  --gutter: 24px;
   --paper: #f5f3ed;
   --surface: #fffefa;
   --line: #dddad0;
@@ -23,9 +25,9 @@ body {
   background: var(--paper);
 }
 main {
-  max-width: 720px;
+  max-width: var(--page-max);
   margin: 0 auto;
-  padding: 40px 24px 64px;
+  padding: 40px var(--gutter) 64px;
 }
 h1 {
   font-family: var(--font-display);
@@ -69,7 +71,10 @@ main > a:first-child {
   margin-top: 40px;
 }
 @media (max-width: 760px) {
+  :root {
+    --gutter: 16px;
+  }
   main {
-    padding: 24px 16px 48px;
+    padding: 24px var(--gutter) 48px;
   }
 }
